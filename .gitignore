@@ -1,0 +1,30 @@
+/_build
+/cover
+/deps
+erl_crash.dump
+*.ez
+
+
+# Created by https://www.gitignore.io/api/ex,elixir,phoenix
+
+#!! ERROR: ex is undefined. Use list command to see defined gitignore types !!#
+
+### Elixir ###
+/_build
+/cover
+/deps
+erl_crash.dump
+*.ez
+
+
+### Phoenix ###
+# Phoenix: a web framework for Elixir
+_build/
+/db
+/deps
+/*.ez
+node_modules/
+erl_crash.dump
+/priv/static/
+/config/prod.secret.exs
+/rel

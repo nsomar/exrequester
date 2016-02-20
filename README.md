@@ -1,0 +1,172 @@
+# NewTest2
+
+**TODO: Add description**
+
+## Installation
+
+If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
+
+  1. Add requester to your list of dependencies in `mix.exs`:
+
+        def deps do
+          [{:requester, "~> 0.0.1"}]
+        end
+
+  2. Ensure requester is started before your application:
+
+        def application do
+          [applications: [:requester]]
+        end
+
+## Usage
+
+### Setting HTTP method
+Define a get request endpoint
+```elixir
+defmodule SampleAPI do
+  use Requester
+
+  @get "/path/to/resource/{resource_id}"
+  defreq get_resource(resource_id: resource_id)
+
+  @post "/path/to/resource/{resource_id}"
+  defreq post_picture(resource_id: resource_id, body: body)
+end
+```
+
+Now to use it:
+```elixir
+SampleAPI.client("http://base_url.com")
+|> SampleAPI.get_resource(resource_id: 123)
+
+SampleAPI.client("http://base_url.com")
+|> SampleAPI.post_picture(resource_id: 123, body: %{key: value})
+```
+
+This will hit
+`http://base_url.com/path/to/resource/123`
+
+In the post request, we use `body` parameter to send the body.
+
+Available http methods are:
+```elixir
+defmodule SampleAPI do
+  use Requester
+
+  @get "/path/to/resource/{resource_id}"
+  defreq get_resource(resource_id: resource_id)
+
+  @put "/path/to/resource/{resource_id}"
+  defreq put_resource(resource_id: resource_id)
+
+  @delete "/path/to/resource/{resource_id}"
+  defreq delete_resource(resource_id: resource_id)
+end
+```
+
+### Handling query
+To add query to your api endpoint you would use the following:
+```elixir
+defmodule SampleAPI do
+  use Requester
+
+  @query [:sort, :filter]
+  @get "/path/to/resource/{resource_id}"
+  defreq get_resource(resource_id: resource_id, sort: sort, filter: filter)
+end
+```
+
+You now can call the function defined with all, some or none of the query values:
+```elixir
+SampleAPI.client("http://base_url.com")
+|> SampleAPI.get_resource(resource_id: 123)
+
+SampleAPI.client("http://base_url.com")
+|> SampleAPI.get_resource(resource_id: 123, sort: "ascending")
+
+SampleAPI.client("http://base_url.com")
+|> SampleAPI.get_resource(resource_id: 123, sort: "ascending", filter: "all")
+```
+
+These will hit the following endpoint in order:
+```
+http://base_url.com/path/to/resource/123
+
+http://base_url.com/path/to/resource/123?sort=ascending
+
+http://base_url.com/path/to/resource/123?sort=ascending&filter=all
+```
+
+### Setting headers
+
+```elixir
+defmodule SampleAPI do
+  use Requester
+
+  @headers [
+    Authorization: :auth,
+    Key1: :key1
+  ]
+  @get "/path/to/resource/{resource_id}"
+  defreq get_resource(resource_id: resource_id, auth: auth, key1: key1)
+end
+```
+
+Now to use it:
+```elixir
+SampleAPI.client("http://base_url.com")
+|> SampleAPI.get_resource(resource_id: 123, auth1: "1", key1: "2")
+```
+
+This will hit
+`http://base_url.com/path/to/resource/123`
+The `Authorization` and `Key1` headers will also be set.
+
+## Compile time and runtime safty
+### Compile time safty
+When definiing functions at compile time, `requester` will not compile if you fail to define the correct method.
+
+For example this:
+```elixir
+@get "/path/to/resource/{resource_id}"
+defreq get_resource()
+```
+When it gets compiled, it will return the following descriptive error.
+```elixir
+== Compilation error on file lib/http_bin_sample.ex ==
+** (ArgumentError) Function definition and url path are not matching:
+URL: /path/to/resource/{resource_id}
+Function: defreq get_resource()
+Errors:
+- Parameters [resource_id] are missing from function definition
+
+Correct definition: defreq get_resource(resource_id: resource_id)
+```
+
+The error will have the correct function definition:
+```elixir
+defreq get_resource(resource_id: resource_id)
+```
+
+### Runtime safty
+When calling the wrong method at runtime, `requester` will fail with a descriptive message.
+
+For example:
+```elixir
+@get "/path/to/resource/{resource_id}"
+defreq get_resource(resource_id: resource_id)
+```
+If you wrongly call the method as:
+```elixir
+AMod.client("http://localhost:9090/")
+|> AMod.get_resource(key: 123)
+```
+
+The following error will be raised:
+```elixir
+** (RuntimeError) You are trying to call the wrong function
+get_resource(key: key)
+please instead call:
+get_resource(resource_id: resource_id)
+```
+The error will inform you about the correct method invocation
