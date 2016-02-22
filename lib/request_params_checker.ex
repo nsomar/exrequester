@@ -88,7 +88,7 @@ defmodule EXRequest.ParamsChecker do
   end
 
   def url_params(url) do
-    Regex.scan(~r/{.*}/U, url)
+    Regex.scan(~r/{.*}/r, url)
     |> Enum.map(fn ([i]) -> String.slice(i, 1..-2) end)
   end
 
