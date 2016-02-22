@@ -8,13 +8,19 @@ defmodule EXRequester.Request do
 
   def add_headers_keys(request, headers_keys), do: Map.put(request, :headers_template, headers_keys)
 
+  def add_body(request, body) do
+     Map.put(request, :body, body)
+  end
+
   def add_body(request, params), do: Map.put(request, :body, params[:body])
 
   def add_query_keys(request, query_keys), do: Map.put(request, :query_keys, query_keys)
 
   def prepared_url(request, params) do
     full_url =
-    Enum.reduce(params, request.path, fn ({key, value}, acc) ->
+    params
+    |> filter_body
+    |> Enum.reduce(request.path, fn ({key, value}, acc) ->
       String.replace(acc, "{#{to_string(key)}}", to_string(value))
     end)
     |> (fn item -> join_parts(request.base_url, item) end).()
@@ -28,7 +34,31 @@ defmodule EXRequester.Request do
 
   defp join_urls(url, query), do: "#{url}?#{query}"
 
+  def prepared_body(request) do
+    _prepared_body(Map.get(request, :body)) || ""
+  end
+
+  defp _prepared_body(nil), do: nil
+
+  defp _prepared_body(body) when is_tuple(body) do
+    body_to_json(Tuple.to_list(body))
+  end
+
+  defp _prepared_body(body) when is_map(body) or is_list(body) do
+    body_to_json(body)
+  end
+
+  defp _prepared_body(body), do: body
+
+  defp body_to_json(body) do
+    case Poison.encode(body) do
+      {:ok, json} -> json
+      _ -> ""
+    end
+  end
+
   def prepared_headers(request, header_params) do
+    header_params = header_params |> filter_body
     header_keys = Map.get(request, :headers_template, [])
     Enum.map(header_keys, fn {key, value} ->
       {key, header_params[value]}
@@ -77,4 +107,9 @@ defmodule EXRequester.Request do
     base <> base_end <> "/" <> path_start <> path
   end
 
+  defp filter_body(params) do
+    Enum.filter(params, fn {key, value} ->
+      key != :body
+    end)
+  end
 end

@@ -10,7 +10,7 @@ defmodule EXRequester.Performer.Mock do
     end
 
     if Map.get(request, :body) do
-      sent = sent ++ [body: request.body]
+      sent = sent ++ [body: Request.prepared_body(request)]
     end
 
     send self(), {

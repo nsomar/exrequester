@@ -61,4 +61,31 @@ defmodule EXRequester.RequestTests do
     assert Request.prepared_query(r, [sort: "ascending", filter: "all"]) == "sort=ascending&filter=all"
   end
 
+  test "handle prepares a body" do
+    r = Request.new(method: :get, path: "users/{id}/repo/{repo_id}")
+    |> Request.add_body("string body")
+
+    assert Request.prepared_body(r) == "string body"
+
+    r = Request.new(method: :get, path: "users/{id}/repo/{repo_id}")
+    |> Request.add_body([1, 2, 3])
+
+    assert Request.prepared_body(r) == "[1,2,3]"
+
+    r = Request.new(method: :get, path: "users/{id}/repo/{repo_id}")
+    |> Request.add_body(["value1", "value2"])
+
+    assert Request.prepared_body(r) == "[\"value1\",\"value2\"]"
+
+    r = Request.new(method: :get, path: "users/{id}/repo/{repo_id}")
+    |> Request.add_body(%{key1: "value1", key2: "value2"})
+
+    assert Request.prepared_body(r) == "{\"key2\":\"value2\",\"key1\":\"value1\"}"
+
+    r = Request.new(method: :get, path: "users/{id}/repo/{repo_id}")
+    |> Request.add_body(%{"key1" => "value1", "key2" => "value2"})
+
+    assert Request.prepared_body(r) == "{\"key2\":\"value2\",\"key1\":\"value1\"}"
+  end
+
 end

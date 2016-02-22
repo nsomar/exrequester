@@ -15,7 +15,7 @@ defmodule EXRequester.Performer.HTTPotion do
       request.method,
       Request.prepared_url(request, params),
       headers: Request.prepared_headers(request, params),
-      body: Map.get(request, :body) || ""
+      body: Request.prepared_body(request)
     )
     |> Response.parse
 

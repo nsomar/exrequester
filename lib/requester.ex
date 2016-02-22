@@ -96,7 +96,7 @@ defmodule EXRequester do
 
       def unquote(function_name)(client, params) do
         request = unquote(request)
-        |> EXRequester.Request.add_body(params)
+        |> EXRequester.Request.add_body(params[:body])
         |> EXRequester.Request.add_base_url(client.url)
 
         check_called_correctly(unquote(function_name), params, request)

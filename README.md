@@ -29,8 +29,8 @@ defmodule SampleAPI do
   @get "/path/to/resource/{resource_id}"
   defreq get_resource(resource_id: resource_id)
 
-  @post "/path/to/resource/{resource_id}"
-  defreq post_picture(resource_id: resource_id, body: body)
+  @delete "/path/to/resource/{resource_id}"
+  defreq delete_picture(resource_id: resource_id)
 end
 ```
 
@@ -45,8 +45,6 @@ SampleAPI.client("http://base_url.com")
 
 This will hit
 `http://base_url.com/path/to/resource/123`
-
-In the post request, we use `body` parameter to send the body.
 
 Available http methods are:
 ```elixir
@@ -63,6 +61,30 @@ defmodule SampleAPI do
   defreq delete_resource(resource_id: resource_id)
 end
 ```
+
+### Handling body
+Body is handled as a normal parameter
+```elixir
+defmodule SampleAPI do
+  use EXRequester
+
+  @post "/path/to/resource/{resource_id}"
+  defreq post_picture(resource_id: resource_id, body: body)
+end
+```
+Body is handled in a special way based on its type.
+
+- String bodyis sent as is
+- List and map bodies is Json encode
+```elixir
+SampleAPI.post_picture(resource_id: 123, body: ["1", "2"])
+SampleAPI.post_picture(resource_id: 123, body: %{key: value})
+```
+Will send json:
+`[\"1\", \"2\"]`
+and
+`{\"key\":\"value\"}`
+- Keyword list are currently ignored and will send an empty body
 
 ### Handling query
 To add query to your api endpoint you would use the following:

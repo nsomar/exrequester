@@ -10,7 +10,7 @@ defmodule EXRequester.Logger do
       "Method: #{request.method}",
       "URL: #{Request.prepared_url(request, params)}",
       "Headers: #{get_log_headers(request, params)}",
-      "Body: #{get_log_body(Map.get(request, :body))}"
+      "Body: #{Request.prepared_body(request)}"
     ]
     |> Enum.join("\n")
     |> IO.puts
@@ -26,9 +26,6 @@ defmodule EXRequester.Logger do
     |> Enum.join("\n")
     |> IO.puts
   end
-
-  defp get_log_body(nil), do: "..."
-  defp get_log_body(body), do: body
 
   defp get_log_headers(request, params) do
     Request.prepared_headers(request, params)

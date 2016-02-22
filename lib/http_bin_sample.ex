@@ -38,6 +38,9 @@ defmodule Mix.Tasks.MyTask do
 
     HTTPBinSample.client("https://httpbin.org")
     |> HTTPBinSample.get_resource(sort: "ascending", filter: ["all", "2"])
+
+    HTTPBinSample.client("http://localhost:9090/")
+    |> HTTPBinSample.request_with_body(body: %{key1: "value1", key2: "value2"})
   end
 
 end
