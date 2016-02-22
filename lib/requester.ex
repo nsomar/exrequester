@@ -44,6 +44,18 @@ defmodule EXRequester do
   This will hit
   `http://base_url.com/path/to/resource/123`
   The `Authorization` and `Key1` headers will also be set.
+
+  If you want to decode the response, pass a decoder as a parameter when calling `get_resource`
+  For example:
+
+        SampleAPI.client("http://base_url.com")
+        |> SampleAPI.get_resource(resource_id: 123, auth1: "1", key1: "2", decoder: fn response ->
+          "Value is " <> response.body
+        end)
+
+  The anonymous function passed to decoder will receive an `EXRequester.Response`. This function can parse the response and return a parsed response. The parsed response will be finally returned.
+
+  The example above returns `"Value is Content of body"`
   """
   defmacro defreq(head) do
     post_defreq(head)
@@ -136,8 +148,7 @@ defmodule EXRequester do
         request = unquote(request)
         |> EXRequester.Request.add_base_url(client.url)
 
-        check_called_correctly(unquote(function_name), params, request)
-        Application.get_env(:exrequester, :request_performer).do_request(request, nil)
+        perform_request_and_parse(unquote(function_name), nil, request)
       end
 
     end
@@ -153,11 +164,26 @@ defmodule EXRequester do
         |> EXRequester.Request.add_body(params[:body])
         |> EXRequester.Request.add_base_url(client.url)
 
-        check_called_correctly(unquote(function_name), params, request)
-        Application.get_env(:exrequester, :request_performer).do_request(request, params)
+        perform_request_and_parse(unquote(function_name), params, request)
       end
 
     end
+  end
+
+  def perform_request_and_parse(function_name, params, request) do
+    check_called_correctly(function_name, params, request)
+    request_performer.do_request(request, params)
+    |> parse_response(params[:decoder])
+  end
+
+  defp request_performer do
+    Application.get_env(:exrequester, :request_performer, EXRequester.Performer.HTTPotion)
+  end
+
+  defp parse_response(response, nil), do: response
+
+  defp parse_response(response, decoder) do
+    decoder.(response)
   end
 
   @doc """

@@ -126,6 +126,12 @@ defmodule EXRequest.ParamsCheckerTests do
     assert res == :ok
   end
 
+  test "it ignores decoder from the function definition" do
+    url = "users/{name}/repo/{id}/{also}"
+    res = EXRequest.ParamsChecker.check_definition_params(:get_status, [:name, :id, :also, :decoder], url, [])
+    assert res == :ok
+  end
+
   test "it ignores textual headers in the definition" do
     url = "users/{name}"
     res = EXRequest.ParamsChecker.check_definition_params(:get_status, [:name, :key1], url, [:key1, "The Value is"])
@@ -141,6 +147,12 @@ defmodule EXRequest.ParamsCheckerTests do
   test "it ignores body parameter in invocation" do
     url = "users/{name}/repo/{id}/{also}"
     res = EXRequest.ParamsChecker.check_invocation_params(:get_status, [:name, :id, :also, :body], url, [])
+    assert res == :ok
+  end
+
+  test "it ignores body decoder from invocation" do
+    url = "users/{name}/repo/{id}/{also}"
+    res = EXRequest.ParamsChecker.check_invocation_params(:get_status, [:name, :id, :also, :decoder], url, [])
     assert res == :ok
   end
 

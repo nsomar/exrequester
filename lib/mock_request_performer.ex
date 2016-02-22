@@ -23,6 +23,11 @@ defmodule EXRequester.Performer.Mock do
       :request,
       sent
     }
+    %EXRequester.Response{
+      status_code: 200,
+      body: "123",
+      headers: [k1: "v2"]
+    }
   end
 
 end

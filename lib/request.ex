@@ -48,8 +48,6 @@ defmodule EXRequester.Request do
      Map.put(request, :body, body)
   end
 
-  def add_body(request, params), do: Map.put(request, :body, params[:body])
-
   @doc """
   Adds query keys to the request
 
@@ -72,6 +70,7 @@ defmodule EXRequester.Request do
     full_url =
     params
     |> filter_body
+    |> filter_body_decoder
     |> Enum.reduce(request.path, fn ({key, value}, acc) ->
       String.replace(acc, "{#{to_string(key)}}", to_string(value))
     end)
@@ -111,7 +110,7 @@ defmodule EXRequester.Request do
     query_keys = Map.get(request, :query_keys) || []
 
     params
-    |> Enum.filter(fn {key, value} ->
+    |> Enum.filter(fn {key, _} ->
       key in query_keys
     end)
     |> Enum.map(fn {key, value} ->
@@ -149,7 +148,7 @@ defmodule EXRequester.Request do
     end
   end
 
-  defp prepare_header_item(template_key: key, template_value: value, header_params: header_params)
+  defp prepare_header_item(template_key: key, template_value: value, header_params: _)
   when is_binary(value) do
     {key, value}
   end
@@ -188,8 +187,14 @@ defmodule EXRequester.Request do
   end
 
   defp filter_body(params) do
-    Enum.filter(params, fn {key, value} ->
+    Enum.filter(params, fn {key, _} ->
       key != :body
+    end)
+  end
+
+  defp filter_body_decoder(params) do
+    Enum.filter(params, fn {key, _} ->
+      key != :decoder
     end)
   end
 end

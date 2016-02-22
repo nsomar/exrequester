@@ -15,7 +15,7 @@ defmodule EXRequest.ParamsChecker do
   * `header_keys` - The headers used to define the function
   """
   def check_definition_params(function_name, function_params, url, header_keys) do
-    function_params = function_params -- [:body]
+    function_params = function_params -- [:body, :decoder]
     case check_params(url, header_keys, function_params) do
       {:error, error} ->
         defined_func = propsed_method_definition(func_name: function_name, params: function_params)
@@ -43,7 +43,7 @@ defmodule EXRequest.ParamsChecker do
   * `header_keys` - The headers used to invoke the function
   """
   def check_invocation_params(function_name, function_params, url, header_keys) do
-    function_params = function_params -- [:body]
+    function_params = function_params -- [:body, :decoder]
     case check_params(url, header_keys, function_params) do
       {:error, _} ->
         invoked_func = propsed_method_invocation(func_name: function_name, params: function_params)

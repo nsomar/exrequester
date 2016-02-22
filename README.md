@@ -55,8 +55,6 @@ SampleAPI.client("http://base_url.com")
 |> SampleAPI.get_picture(resource_id: 123)
 ```
 
-
-
 ### Setting HTTP method
 Define a get request endpoint
 ```elixir
@@ -99,7 +97,7 @@ defmodule SampleAPI do
 end
 ```
 
-### Handling body
+### Handling request body
 Body is handled as a normal parameter
 ```elixir
 defmodule SampleAPI do
@@ -206,6 +204,22 @@ Accept-Language: en-US
 
 Notice the use of quotes in the `"Accept-Language"`. This is needed since `Accept-Language` is not a valid atom name. In order to solve that, add quotation around atoms.
 
+### Decoding HTTP Response
+`EXRequester` allows you to pass an anonymous function to be used as response parser. For example, we can pass a decoder when calling `get_resource`.
+
+```elixir
+SampleAPI.client("http://base_url.com")
+|> SampleAPI.get_resource(resource_id: 123, auth: "1", decoder: fn response ->
+  # Parse the response and return a new one
+  "Response is " <> response.body
+end)
+```
+
+The anonymous function passed to decoder will receive an `EXRequester.Response` structure. The anonymous function can parse the response and return a new response.
+The returned new parsed response will finally returned from `get_resource`.
+
+In the above example, the return value will be `"Response is The body content"`
+
 ## Compile time and runtime safty
 ### Compile time safty
 When definiing functions at compile time, `exrequester` will not compile if you fail to define the correct method.
@@ -262,10 +276,3 @@ The error will inform you about the correct method invocation
 
 ## Future improvments
 - Ability to set the URL in the function definition instead
-- Set predifined headers and send them as part of the payload
-```elixir
-@headers [
-  Authorization: :auth,
-  Key1: "Predifined will be sent as is"
-]
-```

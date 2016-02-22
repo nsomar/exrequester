@@ -42,7 +42,8 @@ defmodule Mix.Tasks.MyTask do
     |> HTTPBinSample.get_resource(sort: "ascending", filter: ["all", "2"])
 
     HTTPBinSample.client("http://localhost:9090/")
-    |> HTTPBinSample.request_with_body(body: %{key1: "value1", key2: "value2"})
+    |> HTTPBinSample.request_with_body(body: %{key1: "value1", key2: "value2"},
+    decoder: &(&1.body |> Poison.decode! |> Map.get("Hello"))) |> IO.inspect 
   end
 
 end
