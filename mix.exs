@@ -3,12 +3,17 @@ defmodule EXRequester.Mixfile do
 
   def project do
     [app: :exrequester,
+    name: "exrequester",
+    source_url: "https://github.com/oarrabi/exrequester",
+    docs: [ extras: ["README.md"] ],
+    description: description,
     version: "0.0.1",
     elixir: "~> 1.0",
     build_embedded: Mix.env == :prod,
     start_permanent: Mix.env == :prod,
     test_coverage: [tool: Coverex.Task, coveralls: true],
-    deps: deps]
+    deps: deps,
+    package: package]
   end
 
   def application do
@@ -22,4 +27,17 @@ defmodule EXRequester.Mixfile do
     {:coverex, "~> 1.4.7", only: :test},
     {:inch_ex, only: :docs}]
   end
+
+  defp description do
+    """
+    Quickly define your API functions using module attributes.
+    """
+  end
+
+  defp package do
+    [ files: [ "lib", "mix.exs", "README.md",],
+      maintainers: [ "Omar Abdelhafith" ],
+      links: %{ "GitHub" => "https://github.com/oarrabi/exrequester" } ]
+  end
+
 end
