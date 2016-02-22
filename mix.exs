@@ -19,6 +19,7 @@ defmodule EXRequester.Mixfile do
     [{:httpotion, "~> 2.2.0"},
     {:poison, "~> 1.5"},
     {:httpotion, "~> 2.2"},
-    {:coverex, "~> 1.4.7", only: :test}]
+    {:coverex, "~> 1.4.7", only: :test},
+    {:inch_ex, only: :docs}]
   end
 end

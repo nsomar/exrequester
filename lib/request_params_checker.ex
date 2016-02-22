@@ -1,6 +1,19 @@
 
 defmodule EXRequest.ParamsChecker do
+  @moduledoc """
+  Checks that the function name and params are correct for the definition and invocation
+  """
 
+  @doc """
+  Checks that the function defined with the parameters is correctly defined for the URL and Header keys
+
+  Parameters:
+
+  * `function_name` - The function name used
+  * `function_params` - The function parameters used in definition
+  * `url` - The url used to define the function
+  * `header_keys` - The headers used to define the function
+  """
   def check_definition_params(function_name, function_params, url, header_keys) do
     function_params = function_params -- [:body]
     case check_params(url, header_keys, function_params) do
@@ -19,10 +32,20 @@ defmodule EXRequest.ParamsChecker do
     end
   end
 
+  @doc """
+  Checks that the function invocation with the parameters is correctly defined for the URL and Header keys
+
+  Parameters:
+
+  * `function_name` - The function name used
+  * `function_params` - The function parameters used in invocation
+  * `url` - The url used to invoke the function
+  * `header_keys` - The headers used to invoke the function
+  """
   def check_invocation_params(function_name, function_params, url, header_keys) do
     function_params = function_params -- [:body]
     case check_params(url, header_keys, function_params) do
-      {:error, error} ->
+      {:error, _} ->
         invoked_func = propsed_method_invocation(func_name: function_name, params: function_params)
         correct_func = propsed_method_invocation(func_name: function_name, url: url, header_keys: header_keys)
         {:error, "You are trying to call the wrong function" <>
@@ -34,6 +57,15 @@ defmodule EXRequest.ParamsChecker do
     end
   end
 
+  @doc """
+  Checks that the url, header_keys and function parameters match
+
+  Parameters:
+
+  * `url` - The url used to invoke the function
+  * `header_params` - The headers used to invoke the function
+  * `params` - The function parameters used in invocation
+  """
   def check_params(url, header_params, params) do
     params = params || []
 
@@ -49,32 +81,90 @@ defmodule EXRequest.ParamsChecker do
       |> adjust_params
   end
 
+  @doc """
+  Get the proposed method definition
+
+  Parameters:
+
+  * `func_name` - The function name used
+  * `url` - The url used to define the function
+  """
   def propsed_method_definition(func_name: func_name, url: url) do
     propsed_method_definition(func_name: func_name, params: url_params(url))
   end
 
+  @doc """
+  Get the proposed method definition
+
+  Parameters:
+
+  * `func_name` - The function name used
+  * `url` - The url used to define the function
+  * `header_keys` - The header keys used to define the function
+  """
   def propsed_method_definition(func_name: func_name, url: url, header_keys: header_keys) do
     header_keys = header_keys |> filter_header_keys
     propsed_method_definition(func_name: func_name, params: url_params(url) ++ header_keys)
   end
 
+  @doc """
+  Get the proposed method definition
+
+  Parameters:
+
+  * `func_name` - The function name used
+  * `params` - The parameters used in the function
+  """
   def propsed_method_definition(func_name: func_name, params: params) do
     "defreq #{func_name}(#{proposed_params(for_params: params)})"
   end
 
+  @doc """
+  Get the proposed method invocation
+
+  Parameters:
+
+  * `func_name` - The function name used
+  * `url` - The url used to invoke the function
+  """
   def propsed_method_invocation(func_name: func_name, url: url) do
     propsed_method_invocation(func_name: func_name, params: url_params(url))
   end
 
+  @doc """
+  Get the proposed method definition
+
+  Parameters:
+
+  * `func_name` - The function name used
+  * `url` - The url used to invoke the function
+  * `header_keys` - The header keys used to invoke the function
+  """
   def propsed_method_invocation(func_name: func_name, url: url, header_keys: header_keys) do
     header_keys = header_keys |> filter_header_keys
     propsed_method_invocation(func_name: func_name, params: url_params(url) ++ header_keys)
   end
 
+  @doc """
+  Get the proposed method definition
+
+  Parameters:
+
+  * `func_name` - The function name used
+  * `params` - The parameters used in the function
+  """
   def propsed_method_invocation(func_name: func_name, params: params) do
     "#{func_name}(#{proposed_params(for_params: params)})"
   end
 
+  @doc """
+  Get an error string for missing and extra params
+
+  Parameters:
+
+  * `missing` - The missing parameters in the definition
+  * `extra` - The extra parameters in the definition
+  """
   def definition_param_error_report(missing: [], extra: []), do: :ok
 
   def definition_param_error_report(missing: missing_params, extra: extra_params) do
@@ -91,6 +181,9 @@ defmodule EXRequest.ParamsChecker do
     {:error, errors |> Enum.join("\n")}
   end
 
+  @doc """
+  Get url parametrs from a url
+  """
   def url_params(url) do
     Regex.scan(~r/{.*}/r, url)
     |> Enum.map(fn ([i]) -> String.slice(i, 1..-2) end)

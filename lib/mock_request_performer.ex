@@ -1,4 +1,10 @@
+
 defmodule EXRequester.Performer.Mock do
+  @moduledoc """
+  Implements `EXRequester.Performer` behaviour. Mocks an HTTP request by sending message to self
+  This class is used in tests
+  """
+
   @behaviour EXRequester.Performer
 
   alias EXRequester.Request

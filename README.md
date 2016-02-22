@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/oarrabi/exrequester.svg?branch=master)](https://travis-ci.org/oarrabi/exrequester)
 [![Coverage Status](https://coveralls.io/repos/github/oarrabi/exrequester/badge.svg?branch=master)](https://coveralls.io/github/oarrabi/exrequester?branch=master)
+[![Inline docs](http://inch-ci.org/github/oarrabi/exrequester.svg?branch=master)](http://inch-ci.org/github/oarrabi/exrequester)
 
 Quickly define your API functions using module attributes, inspired by [retrofit](http://square.github.io/retrofit/).
 
@@ -202,6 +203,8 @@ Calling `SampleAPI.get_resource` will perform a request that always sends these 
 Accept: application/json
 Accept-Language: en-US
 ```
+
+Notice the use of quotes in the `"Accept-Language"`. This is needed since `Accept-Language` is not a valid atom name. In order to solve that, add quotation around atoms.
 
 ## Compile time and runtime safty
 ### Compile time safty

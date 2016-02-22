@@ -1,9 +1,15 @@
 
 defmodule EXRequester.Logger do
+  @moduledoc """
+  Logs the request and response
+  """
 
   alias EXRequester.Request
   alias EXRequester.Response
 
+  @doc """
+  Log an `EXRequester.Request` with the sent params
+  """
   def log_request(request, params) do
     [
       "\n--- Performing request ---",
@@ -16,6 +22,9 @@ defmodule EXRequester.Logger do
     |> IO.puts
   end
 
+  @doc """
+  Log an `EXRequester.Response`
+  """
   def log_response(response) do
     [
       "\n--- Receiving response ---",
@@ -26,6 +35,8 @@ defmodule EXRequester.Logger do
     |> Enum.join("\n")
     |> IO.puts
   end
+
+  # Private
 
   defp get_log_headers(request, params) do
     Request.prepared_headers(request, params)

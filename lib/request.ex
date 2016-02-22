@@ -1,21 +1,73 @@
 
 defmodule EXRequester.Request do
+  @moduledoc """
+  Structure that holds a request
+  """
+
   defstruct [:method, :base_url, :path, :headers_template, :body, :query_keys]
 
+  @doc """
+  Return a new request
+
+  Parameters:
+
+  * `method` - The http method
+  * `path` - The path to request
+  """
   def new(method: method, path: path), do: %EXRequester.Request{method: method, path: path}
 
+  @doc """
+  Adds a base url to the request
+
+  Parameters:
+
+  * `request` - request to update
+  * `base_url` - base url to add
+  """
   def add_base_url(request, base_url), do: Map.put(request, :base_url, base_url)
 
+  @doc """
+  Adds headers key to the request
+
+  Parameters:
+
+  * `request` - request to update
+  * `headers_keys` - header keys to format
+  """
   def add_headers_keys(request, headers_keys), do: Map.put(request, :headers_template, headers_keys)
 
+  @doc """
+  Adds body to the request
+
+  Parameters:
+
+  * `request` - request to update
+  * `body` - body to add
+  """
   def add_body(request, body) do
      Map.put(request, :body, body)
   end
 
   def add_body(request, params), do: Map.put(request, :body, params[:body])
 
+  @doc """
+  Adds query keys to the request
+
+  Parameters:
+
+  * `request` - request to update
+  * `query_keys` - query keys to add
+  """
   def add_query_keys(request, query_keys), do: Map.put(request, :query_keys, query_keys)
 
+  @doc """
+  Return a prepared url
+
+  Parameters:
+
+  * `request` - the request
+  * `params` - the url to fill in the format url
+  """
   def prepared_url(request, params) do
     full_url =
     params
@@ -29,6 +81,46 @@ defmodule EXRequester.Request do
 
     join_urls(full_url, url_query)
   end
+
+  @doc """
+  Return prepared header keyword list
+
+  Parameters:
+
+  * `request` - the request
+  * `header_params` - the header parametrs to update with the keys
+  """
+  def prepared_headers(request, header_params) do
+    header_params = header_params |> filter_body
+    header_keys = Map.get(request, :headers_template, [])
+
+    Enum.map(header_keys, fn {key, value} ->
+      prepare_header_item(template_key: key, template_value: value, header_params: header_params)
+    end) || []
+  end
+
+  @doc """
+  Return a prepared query string
+
+  Parameters:
+
+  * `request` - the request
+  * `params` - the parameters to use to create the query string
+  """
+  def prepared_query(request, params) do
+    query_keys = Map.get(request, :query_keys) || []
+
+    params
+    |> Enum.filter(fn {key, value} ->
+      key in query_keys
+    end)
+    |> Enum.map(fn {key, value} ->
+      "#{key}=#{prepare_query_value(value)}"
+    end)
+    |> Enum.join("&")
+  end
+
+  # Private
 
   defp join_urls(url, ""), do: url
 
@@ -57,15 +149,6 @@ defmodule EXRequester.Request do
     end
   end
 
-  def prepared_headers(request, header_params) do
-    header_params = header_params |> filter_body
-    header_keys = Map.get(request, :headers_template, [])
-
-    Enum.map(header_keys, fn {key, value} ->
-      prepare_header_item(template_key: key, template_value: value, header_params: header_params)
-    end) || []
-  end
-
   defp prepare_header_item(template_key: key, template_value: value, header_params: header_params)
   when is_binary(value) do
     {key, value}
@@ -73,19 +156,6 @@ defmodule EXRequester.Request do
 
   defp prepare_header_item(template_key: key, template_value: value, header_params: header_params) do
     {key, header_params[value]}
-  end
-
-  def prepared_query(request, params) do
-    query_keys = Map.get(request, :query_keys) || []
-
-    params
-    |> Enum.filter(fn {key, value} ->
-      key in query_keys
-    end)
-    |> Enum.map(fn {key, value} ->
-      "#{key}=#{prepare_query_value(value)}"
-    end)
-    |> Enum.join("&")
   end
 
   defp prepare_query_value(value) when is_list(value) do

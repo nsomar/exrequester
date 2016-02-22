@@ -1,6 +1,11 @@
 
 defmodule EXRequester.Performer.HTTPotion do
+  @moduledoc """
+  Implements `EXRequester.Performer` behaviour. Performs an HTTP request using HTTPotion
+  """
+
   @behaviour EXRequester.Performer
+
   alias EXRequester.Request
   alias EXRequester.Response
 
