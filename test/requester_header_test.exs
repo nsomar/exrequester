@@ -63,4 +63,39 @@ defmodule EXRequester.HeaderTests do
     assert_received  {:request, [get: "https://httpbin.org/user/1", headers: [Authorization: 20, Key1: 2]]}
   end
 
+  test "it ignores string headers" do
+
+    defmodule TestAPI8 do
+      use EXRequester
+
+      @headers [
+        Authorization: :authorization,
+        Key1: "The Value Is 123",
+      ]
+
+      @get "user/{id}"
+      defreq get_status(id: id, authorization: authorization)
+    end
+  end
+
+  test "it sends the textual header as is" do
+
+    defmodule TestAPI9 do
+      use EXRequester
+
+      @headers [
+        Authorization: :authorization,
+        "Key1": "The Value Is 123",
+      ]
+
+      @get "user/{id}"
+      defreq get_status(id: id, authorization: authorization)
+    end
+
+    TestAPI9.client("https://httpbin.org")
+    |> TestAPI9.get_status(id: 1, authorization: 20)
+
+    assert_received  {:request, [get: "https://httpbin.org/user/1", headers: [Authorization: 20, Key1: "The Value Is 123"]]}
+  end
+
 end

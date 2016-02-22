@@ -68,9 +68,21 @@ defmodule EXRequest.ParamsCheckerTests do
     assert res == "defreq get_users(id: id)"
   end
 
+  test "it returns a method definition from params ignoring the headers" do
+    url = "users/{name}/{some_id}"
+    res = EXRequest.ParamsChecker.propsed_method_definition(func_name: :get_users, url: url, header_keys: [:key1, "Ignore this key"])
+    assert res == "defreq get_users(name: name, some_id: some_id, key1: key1)"
+  end
+
   test "it returns a method invocation from params" do
     res = EXRequest.ParamsChecker.propsed_method_invocation(func_name: :get_user, params: [:user, :id])
     assert res == "get_user(user: user, id: id)"
+  end
+
+  test "it returns a method invocation from params ignoring the headers" do
+    url = "users/{name}/{some_id}"
+    res = EXRequest.ParamsChecker.propsed_method_invocation(func_name: :get_user, url: url, header_keys: [:key1, "Ignore this key"])
+    assert res == "get_user(name: name, some_id: some_id, key1: key1)"
   end
 
   test "it prints correct parameter error" do
@@ -114,6 +126,12 @@ defmodule EXRequest.ParamsCheckerTests do
     assert res == :ok
   end
 
+  test "it ignores textual headers in the definition" do
+    url = "users/{name}"
+    res = EXRequest.ParamsChecker.check_definition_params(:get_status, [:name, :key1], url, [:key1, "The Value is"])
+    assert res == :ok
+  end
+
   test "it returns invocation parameter success if correct" do
     url = "users/{name}/repo/{id}/{also}"
     res = EXRequest.ParamsChecker.check_invocation_params(:get_status, [:name, :id, :also], url, [])
@@ -142,6 +160,12 @@ defmodule EXRequest.ParamsCheckerTests do
     url = "users/{name}/repo/{id}/{also}"
     res = EXRequest.ParamsChecker.check_invocation_params(:get_status, [], url, [])
     assert res == {:error, "You are trying to call the wrong function\nget_status()\nplease instead call:\nget_status(name: name, id: id, also: also)"}
+  end
+
+  test "it ignores textual headers in the invocation" do
+    url = "users/{name}"
+    res = EXRequest.ParamsChecker.check_invocation_params(:get_status, [:name, :key1], url, [:key1, "The Value is"])
+    assert res == :ok
   end
 
   test "it returns invocation parameter with headers success if correct" do

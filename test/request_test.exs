@@ -36,6 +36,14 @@ defmodule EXRequester.RequestTests do
     [Authorization: "blabla123blabla", Key1: "Value1"]
   end
 
+  test "handle headers ingoring the textual headers" do
+    r = Request.new(method: :get, path: "users/{id}/repo/{repo_id}")
+    |> Request.add_headers_keys([Authorization: :auth, Key1: "The Value Is 123"])
+
+    assert Request.prepared_headers(r, [auth: "blabla123blabla", key1: "The Value Is 123"]) ==
+    [Authorization: "blabla123blabla", Key1: "The Value Is 123"]
+  end
+
   test "handle query" do
     r = Request.new(method: :get, path: "users/{id}/repo/{repo_id}")
     |> Request.add_base_url("https://my_server.com/1/")

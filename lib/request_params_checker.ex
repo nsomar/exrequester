@@ -38,7 +38,9 @@ defmodule EXRequest.ParamsChecker do
     params = params || []
 
     keys_passed = params |> Enum.map(&to_string/1)
-    header_params = header_params |> Enum.map(&to_string/1)
+    header_params = header_params
+    |> filter_header_keys
+    |> Enum.map(&to_string/1)
 
     required_params = url_params(url) ++ header_params
 
@@ -52,6 +54,7 @@ defmodule EXRequest.ParamsChecker do
   end
 
   def propsed_method_definition(func_name: func_name, url: url, header_keys: header_keys) do
+    header_keys = header_keys |> filter_header_keys
     propsed_method_definition(func_name: func_name, params: url_params(url) ++ header_keys)
   end
 
@@ -64,6 +67,7 @@ defmodule EXRequest.ParamsChecker do
   end
 
   def propsed_method_invocation(func_name: func_name, url: url, header_keys: header_keys) do
+    header_keys = header_keys |> filter_header_keys
     propsed_method_invocation(func_name: func_name, params: url_params(url) ++ header_keys)
   end
 
@@ -90,6 +94,12 @@ defmodule EXRequest.ParamsChecker do
   def url_params(url) do
     Regex.scan(~r/{.*}/r, url)
     |> Enum.map(fn ([i]) -> String.slice(i, 1..-2) end)
+  end
+
+  defp filter_header_keys(header_keys) do
+    header_keys |> Enum.filter(fn item ->
+      is_atom(item)
+    end)
   end
 
   defp proposed_params(for_params: url_params) do

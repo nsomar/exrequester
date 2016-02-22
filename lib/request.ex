@@ -60,9 +60,19 @@ defmodule EXRequester.Request do
   def prepared_headers(request, header_params) do
     header_params = header_params |> filter_body
     header_keys = Map.get(request, :headers_template, [])
+
     Enum.map(header_keys, fn {key, value} ->
-      {key, header_params[value]}
+      prepare_header_item(template_key: key, template_value: value, header_params: header_params)
     end) || []
+  end
+
+  defp prepare_header_item(template_key: key, template_value: value, header_params: header_params)
+  when is_binary(value) do
+    {key, value}
+  end
+
+  defp prepare_header_item(template_key: key, template_value: value, header_params: header_params) do
+    {key, header_params[value]}
   end
 
   def prepared_query(request, params) do

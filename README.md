@@ -157,6 +157,7 @@ http://base_url.com/path/to/resource/123?sort=ascending&filter=all
 
 ### Setting headers
 
+#### Dynamic Headers
 ```elixir
 defmodule SampleAPI do
   use EXRequester
@@ -179,6 +180,28 @@ SampleAPI.client("http://base_url.com")
 This will hit
 `http://base_url.com/path/to/resource/123`
 The `Authorization` and `Key1` headers will also be set.
+
+#### Static Headers
+Static headers are defined by using strings, instead of atom, in the `@headers` definition
+
+```elixir
+defmodule SampleAPI do
+  use EXRequester
+
+  @headers [
+    Authorization: :auth,
+    Accept: "application/json",
+    "Accept-Language": "en-US"
+  ]
+  @get "/path/to/resource/{resource_id}"
+  defreq get_resource(resource_id: resource_id, auth: auth)
+end
+```
+Calling `SampleAPI.get_resource` will perform a request that always sends these headers:
+```
+Accept: application/json
+Accept-Language: en-US
+```
 
 ## Compile time and runtime safty
 ### Compile time safty
