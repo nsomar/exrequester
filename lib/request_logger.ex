@@ -19,7 +19,7 @@ defmodule EXRequester.Logger do
   def log_response(response) do
     [
       "\n--- Receiving response ---",
-      "Status: #{response.code}",
+      "Status: #{response.status_code}",
       "Headers: #{get_log_headers(response.headers)}",
       "Body: #{response.body}"
     ]

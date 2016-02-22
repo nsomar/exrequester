@@ -7,7 +7,7 @@ defmodule HTTPBinSample do
   @query [:sort, :filter]
   @headers [
     Authorization: :auth,
-    Key1: :key1
+    Key1: :key1,
   ]
   @get "a_url"
   defreq some_request(auth: auth, key1: key1)

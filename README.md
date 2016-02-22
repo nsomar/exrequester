@@ -2,26 +2,59 @@
 
 [![Build Status](https://travis-ci.org/oarrabi/exrequester.svg?branch=master)](https://travis-ci.org/oarrabi/exrequester)
 [![Coverage Status](https://coveralls.io/repos/github/oarrabi/exrequester/badge.svg?branch=master)](https://coveralls.io/github/oarrabi/exrequester?branch=master)
-**TODO: Add description**
 
+Quickly define your API functions using attributes, inspired by [retrofit](http://square.github.io/retrofit/).
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
-
-  1. Add exrequester to your list of dependencies in `mix.exs`:
-
-        def deps do
-          [{:exrequester, "~> 0.0.1"}]
-        end
-
-  2. Ensure exrequester is started before your application:
-
-        def application do
-          [applications: [:exrequester]]
-        end
+Add `exrequester` to your mix.exs deps
+```elixir
+def deps do
+  [{:exrequester, github: "oarrabi/exrequester"}]
+end
+```
 
 ## Usage
+
+Start by adding `use EXRequester` in your module
+
+```elixir
+defmodule SampleAPI do
+  use EXRequester
+end
+```
+
+This will make `defreq/1` macro available. This macro takes a function name and a set of parametrs as its argument
+```elixir
+defmodule SampleAPI do
+  use EXRequester
+
+  @get "/path/to/resource/{resource_id}"
+  defreq get_picture(resource_id: resource_id)
+end
+```
+
+The above is the simplest form to define an api function.
+- `@get` is used to define the relative path that will be fetched
+- `{resource_id}` in the url will be replaced with the parameter `resource_id` in the defined function_name
+
+Compiling the above will make the following functions available:
+```elixir
+defmodule SampleAPI do
+  def client(base_url)
+  def get_picture(client, resource_id: resource_id)
+end
+```
+- `client/1` is used to set hte base url that will be used in get picture
+- `get_picture/2` will execute the url, it takes the client and the parameters specified in the call to `defreq get_picture...`
+
+For example, to call `get_picture` you would do this:
+```elixir
+SampleAPI.client("http://base_url.com")
+|> SampleAPI.get_picture(resource_id: 123)
+```
+
+
 
 ### Setting HTTP method
 Define a get request endpoint
@@ -172,6 +205,11 @@ The error will have the correct function definition:
 ```elixir
 defreq get_resource(resource_id: resource_id)
 ```
+### Handle response
+Hitting any request will return a `EXRequester.Response` strucutre.
+This structure contains `headers`, `status_code` and `body`
+
+The body will not be parsed and will be returned as is.
 
 ### Runtime safty
 When calling the wrong method at runtime, `exrequester` will fail with a descriptive message.
@@ -195,3 +233,13 @@ please instead call:
 get_resource(resource_id: resource_id)
 ```
 The error will inform you about the correct method invocation
+
+## Future improvments
+- Ability to set the URL in the function definition instead
+- Set predifined headers and send them as part of the payload
+```elixir
+@headers [
+  Authorization: :auth,
+  Key1: "Predifined will be sent as is"
+]
+```
