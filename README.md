@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/oarrabi/exrequester.svg?branch=master)](https://travis-ci.org/oarrabi/exrequester)
 [![Coverage Status](https://coveralls.io/repos/github/oarrabi/exrequester/badge.svg?branch=master)](https://coveralls.io/github/oarrabi/exrequester?branch=master)
 
-Quickly define your API functions using attributes, inspired by [retrofit](http://square.github.io/retrofit/).
+Quickly define your API functions using module attributes, inspired by [retrofit](http://square.github.io/retrofit/).
 
 ## Installation
 
