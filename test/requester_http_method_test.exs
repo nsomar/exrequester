@@ -1,11 +1,11 @@
 
-defmodule RequesterMethodTest do
+defmodule EXRequester.MethodTests do
   use ExUnit.Case
 
   test "it can define 2 get methods" do
 
     defmodule TestAPI5 do
-      use Requester
+      use EXRequester
 
       @get "user/{id}"
       defreq get_status(id: id)
@@ -27,7 +27,7 @@ defmodule RequesterMethodTest do
 
   test "it defines correct method" do
     defmodule TestAPI6 do
-      use Requester
+      use EXRequester
 
       @get "user/{id}"
       defreq get_status(id: id)
@@ -47,7 +47,7 @@ defmodule RequesterMethodTest do
 
   test "it preforms post and put requests" do
     defmodule TestAPIA6 do
-      use Requester
+      use EXRequester
 
       @put "user/{id}"
       defreq get_status(id: id)

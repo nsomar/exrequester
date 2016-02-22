@@ -1,8 +1,8 @@
 
-defmodule Requester.Logger do
+defmodule EXRequester.Logger do
 
-  alias Requester.Request
-  alias Requester.Response
+  alias EXRequester.Request
+  alias EXRequester.Response
 
   def log_request(request, params) do
     [

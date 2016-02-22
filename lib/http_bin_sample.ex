@@ -1,5 +1,5 @@
 defmodule HTTPBinSample do
-  use Requester
+  use EXRequester
 
   @get "/rvnwnlrv/status/{status}"
   defreq get_status(status: status)
@@ -22,7 +22,7 @@ end
 
 defmodule Mix.Tasks.MyTask do
   use Mix.Task
-  use Requester
+  use EXRequester
 
   @shortdoc "do stuff"
   def run(_) do

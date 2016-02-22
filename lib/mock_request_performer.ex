@@ -1,7 +1,7 @@
-defmodule Requester.Performer.Mock do
-  @behaviour Requester.Performer
+defmodule EXRequester.Performer.Mock do
+  @behaviour EXRequester.Performer
 
-  alias Requester.Request
+  alias EXRequester.Request
   def do_request(request, params)  do
     sent = ["#{request.method}": "#{Request.prepared_url(request, params)}"]
 

@@ -1,5 +1,5 @@
 
-defmodule RequesterTest do
+defmodule EXRequester.Tests do
   use ExUnit.Case
 
   test "it does not compile when missing arguments in function" do
@@ -8,7 +8,7 @@ defmodule RequesterTest do
     "Function definition and url path are not matching:\nURL: user/{id}\nFunction: defreq get_status()\nErrors:\n- Parameters [id] are missing from function definition\n\nCorrect definition: defreq get_status(id: id)",
     fn ->
       defmodule TestAPI1 do
-        use Requester
+        use EXRequester
 
         @get "user/{id}"
         defreq get_status
@@ -22,7 +22,7 @@ defmodule RequesterTest do
     "Function definition and url path are not matching:\nURL: user/{id}\nFunction: defreq get_status(id: id, name: name)\nErrors:\n- Parameters [name] are ignored in the function definition\n\nCorrect definition: defreq get_status(id: id)",
     fn ->
       defmodule TestAPI2 do
-        use Requester
+        use EXRequester
 
         @get "user/{id}"
         defreq get_status(id: id, name: name)
@@ -33,7 +33,7 @@ defmodule RequesterTest do
   test "it compiles when arguments in function and url matches" do
 
     defmodule TestAPI3 do
-      use Requester
+      use EXRequester
 
       @get "user/{id}"
       defreq get_status(id: id)
@@ -43,7 +43,7 @@ defmodule RequesterTest do
   test "it throws error if wrong method is called" do
 
     defmodule TestAPI4 do
-      use Requester
+      use EXRequester
 
       @get "user/{id}"
       defreq get_status(id: id)
@@ -70,7 +70,7 @@ defmodule RequesterTest do
      "Missing http method/url attribute\nExample:\n  @get(\"user/{user_id}/pictures/{picture_id}\")\n  @post(\"user/{user_id}/upload_picture\")",
      fn ->
       defmodule TestAPI4a do
-        use Requester
+        use EXRequester
         defreq get_status(id: id)
       end
     end)

@@ -1,11 +1,11 @@
 
-defmodule RequesterBodyTest do
+defmodule EXRequester.BodyTests do
   use ExUnit.Case
 
   test "it return error if header keys are missing" do
 
     defmodule TestAPI5 do
-      use Requester
+      use EXRequester
       @get "user/{id}"
       defreq get_status(id: id, body: body)
     end

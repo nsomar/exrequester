@@ -1,5 +1,5 @@
 
-defmodule RequestParamChecker do
+defmodule EXRequest.ParamsChecker do
 
   def check_definition_params(function_name, function_params, url, header_keys) do
     function_params = function_params -- [:body]

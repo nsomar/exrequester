@@ -1,8 +1,8 @@
 
-defmodule Requester.Request do
+defmodule EXRequester.Request do
   defstruct [:method, :base_url, :path, :headers_template, :body, :query_keys]
 
-  def new(method: method, path: path), do: %Requester.Request{method: method, path: path}
+  def new(method: method, path: path), do: %EXRequester.Request{method: method, path: path}
 
   def add_base_url(request, base_url), do: Map.put(request, :base_url, base_url)
 

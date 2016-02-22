@@ -1,7 +1,7 @@
 
-defmodule Requester.RequestTest do
+defmodule EXRequester.RequestTests do
   use ExUnit.Case
-  alias  Requester.Request
+  alias  EXRequester.Request
 
   test "joins strings correctly" do
     r = Request.new(method: :get, path: "users/{id}/repo/{repo_id}")

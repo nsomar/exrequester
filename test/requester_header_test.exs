@@ -1,5 +1,5 @@
 
-defmodule RequesterHeaderTest do
+defmodule EXRequester.HeaderTests do
   use ExUnit.Case
 
   test "it return error if header keys are missing" do
@@ -8,7 +8,7 @@ defmodule RequesterHeaderTest do
     "Function definition and url path are not matching:\nURL: user/{id}\nFunction: defreq get_status(id: id, key1: key1)\nErrors:\n- Parameters [authorization] are missing from function definition\n\nCorrect definition: defreq get_status(id: id, authorization: authorization, key1: key1)",
     fn ->
       defmodule TestAPI5 do
-        use Requester
+        use EXRequester
 
         @headers [
           Authorization: :authorization,
@@ -24,7 +24,7 @@ defmodule RequesterHeaderTest do
   test "it raise error if calling method with wrong parametrs" do
 
     defmodule TestAPI6 do
-      use Requester
+      use EXRequester
 
       @headers [
         Authorization: :authorization,
@@ -46,7 +46,7 @@ defmodule RequesterHeaderTest do
   test "it does not raise if called correctly" do
 
     defmodule TestAPI7 do
-      use Requester
+      use EXRequester
 
       @headers [
         Authorization: :authorization,

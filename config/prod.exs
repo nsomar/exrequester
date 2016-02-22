@@ -1,5 +1,5 @@
 use Mix.Config
 
-config :requester,
-  request_performer: Requester.Performer.HTTPotion,
+config :exrequester,
+  request_performer: EXRequester.Performer.HTTPotion,
   log_requests: false

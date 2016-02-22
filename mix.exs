@@ -1,8 +1,8 @@
-defmodule NewTest2.Mixfile do
+defmodule EXRequester.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :requester,
+    [app: :exrequester,
     version: "0.0.1",
     elixir: "~> 1.1",
     build_embedded: Mix.env == :prod,

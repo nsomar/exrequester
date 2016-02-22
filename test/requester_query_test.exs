@@ -1,11 +1,11 @@
 
-defmodule RequesterQueryTest do
+defmodule EXRequester.QueryTests do
   use ExUnit.Case
 
   test "it return error if header keys are missing" do
 
     defmodule TestAPI5 do
-      use Requester
+      use EXRequester
 
       @query [:sort, :filter]
       @get "user/{id}"

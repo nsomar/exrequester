@@ -1,5 +1,5 @@
 
-defmodule Requester do
+defmodule EXRequester do
 
   defmacro __using__(_) do
     quote do
@@ -36,15 +36,15 @@ defmodule Requester do
       query = get_request_query
 
       request = quote do
-        Requester.Request.new(method: unquote(request_method), path: unquote(request_path))
-        |> Requester.Request.add_headers_keys(unquote(headers))
-        |> Requester.Request.add_query_keys(unquote(query))
+        EXRequester.Request.new(method: unquote(request_method), path: unquote(request_path))
+        |> EXRequester.Request.add_headers_keys(unquote(headers))
+        |> EXRequester.Request.add_query_keys(unquote(query))
       end
 
       proposed_method =
-      RequestParamChecker.propsed_method_invocation(func_name: function_name, url: request_path)
+      EXRequest.ParamsChecker.propsed_method_invocation(func_name: function_name, url: request_path)
 
-      res = RequestParamChecker.check_definition_params(
+      res = EXRequest.ParamsChecker.check_definition_params(
       function_name,
       function_params -- query,
       request_path,
@@ -80,10 +80,10 @@ defmodule Requester do
 
       def unquote(function_name)(client) do
         request = unquote(request)
-        |> Requester.Request.add_base_url(client.url)
+        |> EXRequester.Request.add_base_url(client.url)
 
         check_called_correctly(unquote(function_name), params, request)
-        Application.get_env(:requester, :request_performer).do_request(request, nil)
+        Application.get_env(:exrequester, :request_performer).do_request(request, nil)
       end
 
     end
@@ -96,11 +96,11 @@ defmodule Requester do
 
       def unquote(function_name)(client, params) do
         request = unquote(request)
-        |> Requester.Request.add_body(params)
-        |> Requester.Request.add_base_url(client.url)
+        |> EXRequester.Request.add_body(params)
+        |> EXRequester.Request.add_base_url(client.url)
 
         check_called_correctly(unquote(function_name), params, request)
-        Application.get_env(:requester, :request_performer).do_request(request, params)
+        Application.get_env(:exrequester, :request_performer).do_request(request, params)
       end
 
     end
@@ -110,7 +110,7 @@ defmodule Requester do
     params = params || []
     headers_template = request.headers_template || []
 
-    case RequestParamChecker.check_invocation_params(
+    case EXRequest.ParamsChecker.check_invocation_params(
     function_name,
     Keyword.keys(params) -- request.query_keys,
     request.path,

@@ -1,4 +1,4 @@
-# NewTest2
+# EXRequester
 
 **TODO: Add description**
 
@@ -6,16 +6,16 @@
 
 If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
 
-  1. Add requester to your list of dependencies in `mix.exs`:
+  1. Add exrequester to your list of dependencies in `mix.exs`:
 
         def deps do
-          [{:requester, "~> 0.0.1"}]
+          [{:exrequester, "~> 0.0.1"}]
         end
 
-  2. Ensure requester is started before your application:
+  2. Ensure exrequester is started before your application:
 
         def application do
-          [applications: [:requester]]
+          [applications: [:exrequester]]
         end
 
 ## Usage
@@ -24,7 +24,7 @@ If [available in Hex](https://hex.pm/docs/publish), the package can be installed
 Define a get request endpoint
 ```elixir
 defmodule SampleAPI do
-  use Requester
+  use EXRequester
 
   @get "/path/to/resource/{resource_id}"
   defreq get_resource(resource_id: resource_id)
@@ -51,7 +51,7 @@ In the post request, we use `body` parameter to send the body.
 Available http methods are:
 ```elixir
 defmodule SampleAPI do
-  use Requester
+  use EXRequester
 
   @get "/path/to/resource/{resource_id}"
   defreq get_resource(resource_id: resource_id)
@@ -68,7 +68,7 @@ end
 To add query to your api endpoint you would use the following:
 ```elixir
 defmodule SampleAPI do
-  use Requester
+  use EXRequester
 
   @query [:sort, :filter]
   @get "/path/to/resource/{resource_id}"
@@ -101,7 +101,7 @@ http://base_url.com/path/to/resource/123?sort=ascending&filter=all
 
 ```elixir
 defmodule SampleAPI do
-  use Requester
+  use EXRequester
 
   @headers [
     Authorization: :auth,
@@ -124,7 +124,7 @@ The `Authorization` and `Key1` headers will also be set.
 
 ## Compile time and runtime safty
 ### Compile time safty
-When definiing functions at compile time, `requester` will not compile if you fail to define the correct method.
+When definiing functions at compile time, `exrequester` will not compile if you fail to define the correct method.
 
 For example this:
 ```elixir
@@ -149,7 +149,7 @@ defreq get_resource(resource_id: resource_id)
 ```
 
 ### Runtime safty
-When calling the wrong method at runtime, `requester` will fail with a descriptive message.
+When calling the wrong method at runtime, `exrequester` will fail with a descriptive message.
 
 For example:
 ```elixir
