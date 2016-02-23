@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="452px" height="96px" viewBox="0 0 452 96" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.4.2 (15857) - http://www.bohemiancoding.com/sketch -->
+    <title>Logo</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Logo" sketch:type="MSArtboardGroup" fill="#4F2E5E">
+            <text id="EXRequester" sketch:type="MSTextLayer" font-family="Helvetica Neue" font-size="60" font-weight="260">
+                <tspan x="104" y="69">EXRequester</tspan>
+            </text>
+            <g id="at" sketch:type="MSLayerGroup" transform="translate(18.000000, 21.000000)">
+                <g id="Layer_1" sketch:type="MSShapeGroup">
+                    <g id="Group">
+                        <path d="M28.5,57 C12.825,57 0,44.175 0,28.5 C0,12.825 12.825,0 28.5,0 C44.175,0 57,12.825 57,28.5 C57,29.925 56.05,30.875 54.625,30.875 C53.2,30.875 52.25,29.925 52.25,28.5 C52.25,15.4375 41.5625,4.75 28.5,4.75 C15.4375,4.75 4.75,15.4375 4.75,28.5 C4.75,41.5625 15.4375,52.25 28.5,52.25 C34.9125,52.25 40.85,49.875 45.3625,45.3625 C46.3125,44.4125 47.7375,44.4125 48.6875,45.3625 C49.6375,46.3125 49.6375,47.7375 48.6875,48.6875 C43.225,54.15 36.1,57 28.5,57 L28.5,57 Z" id="Shape"></path>
+                        <path d="M47.5,38 C42.275,38 38,33.725 38,28.5 C38,27.075 38.95,26.125 40.375,26.125 C41.8,26.125 42.75,27.075 42.75,28.5 C42.75,31.1125 44.8875,33.25 47.5,33.25 C50.1125,33.25 52.25,31.1125 52.25,28.5 C52.25,27.075 53.2,26.125 54.625,26.125 C56.05,26.125 57,27.075 57,28.5 C57,33.725 52.725,38 47.5,38 L47.5,38 Z" id="Shape"></path>
+                        <path d="M28.5,42.75 C20.6625,42.75 14.25,36.3375 14.25,28.5 C14.25,20.6625 20.6625,14.25 28.5,14.25 C36.3375,14.25 42.75,20.6625 42.75,28.5 C42.75,36.3375 36.3375,42.75 28.5,42.75 L28.5,42.75 Z M28.5,19 C23.275,19 19,23.275 19,28.5 C19,33.725 23.275,38 28.5,38 C33.725,38 38,33.725 38,28.5 C38,23.275 33.725,19 28.5,19 L28.5,19 Z" id="Shape"></path>
+                        <path d="M40.375,30.875 C38.95,30.875 38,29.925 38,28.5 L38,16.625 C38,15.2 38.95,14.25 40.375,14.25 C41.8,14.25 42.75,15.2 42.75,16.625 L42.75,28.5 C42.75,29.925 41.8,30.875 40.375,30.875 L40.375,30.875 Z" id="Shape"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
