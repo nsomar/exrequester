@@ -2,6 +2,7 @@
 <img src="https://raw.githubusercontent.com/oarrabi/exrequester/master/res/logo.png" width="500" align="middle"/>
 <br/>
 <br/>
+<br/>
 </p>
 [![Build Status](https://travis-ci.org/oarrabi/exrequester.svg?branch=master)](https://travis-ci.org/oarrabi/exrequester)
 [![Hex.pm](https://img.shields.io/hexpm/v/exrequester.svg)](https://hex.pm/packages/exrequester)
