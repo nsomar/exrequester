@@ -32,7 +32,7 @@ defmodule EXRequester.Mixfile do
 
   defp description do
     """
-    Quickly define your API functions using module attributes.
+    Quickly create API clients using module attributes.
     """
   end
 
