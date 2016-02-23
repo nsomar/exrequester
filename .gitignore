@@ -13,6 +13,7 @@ erl_crash.dump
 /_build
 /cover
 /deps
+/doc
 erl_crash.dump
 *.ez
 
