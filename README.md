@@ -1,6 +1,8 @@
 # EXRequester
 
 [![Build Status](https://travis-ci.org/oarrabi/exrequester.svg?branch=master)](https://travis-ci.org/oarrabi/exrequester)
+[![Hex.pm](https://img.shields.io/hexpm/v/plug.svg)](https://hex.pm/packages/exrequester)
+[![API Docs](https://img.shields.io/badge/api-docs-yellow.svg?style=flat)](http://hexdocs.pm/exrequester/)
 [![Coverage Status](https://coveralls.io/repos/github/oarrabi/exrequester/badge.svg?branch=master)](https://coveralls.io/github/oarrabi/exrequester?branch=master)
 [![Inline docs](http://inch-ci.org/github/oarrabi/exrequester.svg?branch=master)](http://inch-ci.org/github/oarrabi/exrequester)
 
@@ -8,11 +10,16 @@ Quickly define your API functions using module attributes, inspired by [retrofit
 
 ## Installation
 
-Add `exrequester` to your mix.exs deps
+Add `exrequester` to your `mix.exs` deps
 ```elixir
 def deps do
-  [{:exrequester, github: "oarrabi/exrequester"}]
+  [{:exrequester, "~> 0.1.0"}]
 end
+```
+
+Then fetch your project's dependencies:
+```
+$ mix deps.get
 ```
 
 ## Usage

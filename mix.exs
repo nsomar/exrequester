@@ -7,7 +7,7 @@ defmodule EXRequester.Mixfile do
     source_url: "https://github.com/oarrabi/exrequester",
     docs: [ extras: ["README.md"] ],
     description: description,
-    version: "0.0.1",
+    version: "0.1.0",
     elixir: "~> 1.0",
     build_embedded: Mix.env == :prod,
     start_permanent: Mix.env == :prod,
@@ -25,7 +25,9 @@ defmodule EXRequester.Mixfile do
     {:poison, "~> 1.5"},
     {:httpotion, "~> 2.2"},
     {:coverex, "~> 1.4.7", only: :test},
-    {:inch_ex, only: :docs}]
+    {:inch_ex, only: :docs},
+    {:ex_doc, "~> 0.7", only: :docs},
+    {:earmark, "~> 0.1", only: :docs}]
   end
 
   defp description do
