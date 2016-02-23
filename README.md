@@ -6,7 +6,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/oarrabi/exrequester/badge.svg?branch=master)](https://coveralls.io/github/oarrabi/exrequester?branch=master)
 [![Inline docs](http://inch-ci.org/github/oarrabi/exrequester.svg?branch=master)](http://inch-ci.org/github/oarrabi/exrequester)
 
-Quickly define your API functions using module attributes, inspired by [retrofit](http://square.github.io/retrofit/).
+Quickly create API clients using module attributes, inspired by [retrofit](http://square.github.io/retrofit/).
 
 ## Installation
 
