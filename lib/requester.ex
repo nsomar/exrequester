@@ -120,29 +120,16 @@ defmodule EXRequester do
   """
   def define_function(name: function_name, request: request, has_params: has_params) do
 
-    quote bind_quoted:
-    [function_name: function_name,
-    has_params: has_params,
-    request: request] do
-
+    quote bind_quoted: [has_params: has_params], unquote: true do
       if has_params do
-        define_function_with_params(name: function_name, request: request, has_params: true)
+        unquote(define_function_with_params(name: function_name, request: request, has_params: true))
       else
-        define_function_with_params(name: function_name, request: request, has_params: false)
+        unquote(define_function_with_params(name: function_name, request: request, has_params: false))
       end
     end
   end
 
-  @doc """
-  Define the function to call
-
-  Parameters:
-
-  * `function_name` - the function name to define
-  * `request` - `EXRequester.request` to use
-  * `has_params` - the function has any parameter
-  """
-  defmacro define_function_with_params(name: function_name, request: request, has_params: true) do
+  defp define_function_with_params(name: function_name, request: request, has_params: true) do
     quote bind_quoted:
     [function_name: function_name,
     request: request] do
@@ -156,7 +143,7 @@ defmodule EXRequester do
     end
   end
 
-  defmacro define_function_with_params(name: function_name, request: request, has_params: false) do
+  defp define_function_with_params(name: function_name, request: request, has_params: false) do
     quote bind_quoted:
     [function_name: function_name,
     request: request] do
@@ -242,15 +229,12 @@ defmodule EXRequester do
   * `has_params` - the function has any parameter
   """
   def define_catch_error_function(name: function_name, proposed: proposed_function, has_params: has_params) do
-    quote bind_quoted: [
-      function_name: function_name,
-      has_params: has_params,
-      proposed_function: proposed_function] do
+    quote bind_quoted: [has_params: has_params], unquote: true do
 
         if has_params do
-          define_catch_error_function_with_params(name: function_name, proposed: proposed_function, has_params: true)
+          unquote(define_catch_error_function_with_params(name: function_name, proposed: proposed_function, has_params: true))
         else
-          define_catch_error_function_with_params(name: function_name, proposed: proposed_function, has_params: false)
+          unquote(define_catch_error_function_with_params(name: function_name, proposed: proposed_function, has_params: false))
         end
     end
   end
@@ -260,12 +244,11 @@ defmodule EXRequester do
 
   Parameters:
 
-
   * `function_name` - the function name to define
   * `proposed_function` - the proposed function to define
   * `has_params` - the function has any parameter
   """
-  defmacro define_catch_error_function_with_params(name: function_name, proposed: proposed_function, has_params: false) do
+  defp define_catch_error_function_with_params(name: function_name, proposed: proposed_function, has_params: false) do
     quote bind_quoted: [
       function_name: function_name,
       proposed_function: proposed_function] do
@@ -278,7 +261,7 @@ defmodule EXRequester do
     end
   end
 
-  defmacro define_catch_error_function_with_params(name: function_name, proposed: proposed_function, has_params: true) do
+  defp define_catch_error_function_with_params(name: function_name, proposed: proposed_function, has_params: true) do
     quote bind_quoted: [
       function_name: function_name,
       proposed_function: proposed_function] do
