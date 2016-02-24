@@ -9,7 +9,7 @@ defmodule EXRequester.QueryTests do
 
       @query [:sort, :filter]
       @get "user/{id}"
-      defreq get_status(id: id, sort: sort, filter: filter)
+      defreq get_status
     end
 
     TestAPI5.client("https://httpbin.org")

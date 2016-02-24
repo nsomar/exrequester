@@ -96,4 +96,35 @@ defmodule EXRequester.RequestTests do
     assert Request.prepared_body(r) == "{\"key2\":\"value2\",\"key1\":\"value1\"}"
   end
 
+  test "test has_params" do
+    assert Request.new(method: :get, path: "users/{id}")
+    |> Request.add_query_keys([:q1, :q2])
+    |> Request.add_headers_keys([h1: :v1])
+    |> Request.has_params == true
+
+    assert Request.new(method: :get, path: "users")
+    |> Request.add_query_keys([:q1, :q2])
+    |> Request.add_headers_keys([h1: :v1])
+    |> Request.has_params == true
+
+    assert Request.new(method: :get, path: "users")
+    |> Request.add_query_keys([])
+    |> Request.add_headers_keys([h1: :v1])
+    |> Request.has_params == true
+
+    assert Request.new(method: :get, path: "users")
+    |> Request.add_headers_keys([h1: :v1])
+    |> Request.has_params == true
+
+    assert Request.new(method: :get, path: "users")
+    |> Request.add_query_keys([:q1, :q2])
+    |> Request.has_params == true
+
+    assert Request.new(method: :get, path: "users/{id}")
+    |> Request.has_params == true
+
+    assert Request.new(method: :get, path: "users")
+    |> Request.has_params == false
+    
+  end
 end

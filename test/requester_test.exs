@@ -2,41 +2,13 @@
 defmodule EXRequester.Tests do
   use ExUnit.Case
 
-  test "it does not compile when missing arguments in function" do
-
-    assert_raise(ArgumentError,
-    "Function definition and url path are not matching:\nURL: user/{id}\nFunction: defreq get_status()\nErrors:\n- Parameters [id] are missing from function definition\n\nCorrect definition: defreq get_status(id: id)",
-    fn ->
-      defmodule TestAPI1 do
-        use EXRequester
-
-        @get "user/{id}"
-        defreq get_status
-      end
-    end)
-  end
-
-  test "it does not compile when extra arguments in function" do
-
-    assert_raise(ArgumentError,
-    "Function definition and url path are not matching:\nURL: user/{id}\nFunction: defreq get_status(id: id, name: name)\nErrors:\n- Parameters [name] are ignored in the function definition\n\nCorrect definition: defreq get_status(id: id)",
-    fn ->
-      defmodule TestAPI2 do
-        use EXRequester
-
-        @get "user/{id}"
-        defreq get_status(id: id, name: name)
-      end
-    end)
-  end
-
   test "it compiles when arguments in function and url matches" do
 
     defmodule TestAPI3 do
       use EXRequester
 
       @get "user/{id}"
-      defreq get_status(id: id)
+      defreq get_status
     end
   end
 
@@ -46,18 +18,18 @@ defmodule EXRequester.Tests do
       use EXRequester
 
       @get "user/{id}"
-      defreq get_status(id: id)
+      defreq get_status
     end
 
     assert_raise(RuntimeError,
-    "You are trying to call the wrong function\nget_status(client)\nplease instead call:\nget_status(id: id)",
+    "You are trying to call the wrong function\nget_status(client)\nplease instead call:\nget_status(client, id: id)",
     fn ->
       TestAPI4.client("https://httpbin.org/")
       |> TestAPI4.get_status
     end)
 
     assert_raise(RuntimeError,
-    "You are trying to call the wrong function\nget_status(id: id, name: name)\nplease instead call:\nget_status(id: id)",
+    "You are trying to call the wrong function\nget_status(client, id: id, name: name)\nplease instead call:\nget_status(client, id: id)",
     fn ->
       TestAPI4.client("https://httpbin.org/")
       |> TestAPI4.get_status(id: 1, name: 2)
@@ -71,7 +43,7 @@ defmodule EXRequester.Tests do
      fn ->
       defmodule TestAPI4a do
         use EXRequester
-        defreq get_status(id: id)
+        defreq get_status
       end
     end)
 

@@ -58,6 +58,18 @@ defmodule EXRequester.Request do
   """
   def add_query_keys(request, query_keys), do: Map.put(request, :query_keys, query_keys)
 
+  def has_params(request) do
+    header_keys = Map.get(request, :headers_template) || []
+    |> Keyword.values
+    |> Enum.filter(fn item -> is_atom(item) end)
+
+    all_params = header_keys ++
+    (Map.get(request, :path) |> url_params) ++
+    (Map.get(request, :query_keys) || [])
+
+    all_params |> length > 0
+  end
+
   @doc """
   Return a prepared url
 
@@ -66,6 +78,10 @@ defmodule EXRequester.Request do
   * `request` - the request
   * `params` - the url to fill in the format url
   """
+  def prepared_url(request, nil) do
+    join_parts(request.base_url, request.path)
+  end
+
   def prepared_url(request, params) do
     full_url =
     params
@@ -89,6 +105,8 @@ defmodule EXRequester.Request do
   * `request` - the request
   * `header_params` - the header parametrs to update with the keys
   """
+  def prepared_headers(request, nil), do: []
+
   def prepared_headers(request, header_params) do
     header_params = header_params |> filter_body
     header_keys = Map.get(request, :headers_template, [])
@@ -196,5 +214,11 @@ defmodule EXRequester.Request do
     Enum.filter(params, fn {key, _} ->
       key != :decoder
     end)
+  end
+
+  defp url_params(nil), do: []
+  defp url_params(url) do
+    Regex.scan(~r/{.*}/r, url)
+    |> Enum.map(fn ([i]) -> String.slice(i, 1..-2) end)
   end
 end

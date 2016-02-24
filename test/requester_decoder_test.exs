@@ -7,7 +7,7 @@ defmodule EXRequester.DEcoderTests do
       use EXRequester
 
       @put "user/{id}"
-      defreq get_status(id: id)
+      defreq get_status
     end
 
     res = TestAPIA6.client("https://httpbin.org")
@@ -23,7 +23,7 @@ defmodule EXRequester.DEcoderTests do
       use EXRequester
 
       @put "user/{id}"
-      defreq get_status(id: id)
+      defreq get_status
     end
 
     res = TestAPIA7.client("https://httpbin.org")

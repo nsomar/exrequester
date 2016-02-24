@@ -43,13 +43,13 @@ defmodule SampleAPI do
   use EXRequester
 
   @get "/path/to/resource/{resource_id}"
-  defreq get_picture(resource_id: resource_id)
+  defreq get_picture
 end
 ```
 
 The above is the simplest form to define an api function.
 - `@get` is used to define the relative path that will be fetched
-- `{resource_id}` in the url will be replaced with the parameter `resource_id` in the defined function_name
+- `{resource_id}` the resource id to use, this has to be passed when calling the function
 
 Compiling the above will make the following functions available:
 ```elixir
@@ -74,10 +74,10 @@ defmodule SampleAPI do
   use EXRequester
 
   @get "/path/to/resource/{resource_id}"
-  defreq get_resource(resource_id: resource_id)
+  defreq get_resource
 
   @delete "/path/to/resource/{resource_id}"
-  defreq delete_picture(resource_id: resource_id)
+  defreq delete_picture
 end
 ```
 
@@ -99,13 +99,13 @@ defmodule SampleAPI do
   use EXRequester
 
   @get "/path/to/resource/{resource_id}"
-  defreq get_resource(resource_id: resource_id)
+  defreq get_resource
 
   @put "/path/to/resource/{resource_id}"
-  defreq put_resource(resource_id: resource_id)
+  defreq put_resource
 
   @delete "/path/to/resource/{resource_id}"
-  defreq delete_resource(resource_id: resource_id)
+  defreq delete_resource
 end
 ```
 
@@ -116,7 +116,7 @@ defmodule SampleAPI do
   use EXRequester
 
   @post "/path/to/resource/{resource_id}"
-  defreq post_picture(resource_id: resource_id, body: body)
+  defreq post_picture
 end
 ```
 Body is handled in a special way based on its type.
@@ -141,7 +141,7 @@ defmodule SampleAPI do
 
   @query [:sort, :filter]
   @get "/path/to/resource/{resource_id}"
-  defreq get_resource(resource_id: resource_id, sort: sort, filter: filter)
+  defreq get_resource
 end
 ```
 
@@ -178,7 +178,7 @@ defmodule SampleAPI do
     Key1: :key1
   ]
   @get "/path/to/resource/{resource_id}"
-  defreq get_resource(resource_id: resource_id, auth: auth, key1: key1)
+  defreq get_resource
 end
 ```
 
@@ -205,7 +205,7 @@ defmodule SampleAPI do
     "Accept-Language": "en-US"
   ]
   @get "/path/to/resource/{resource_id}"
-  defreq get_resource(resource_id: resource_id, auth: auth)
+  defreq get_resource
 end
 ```
 Calling `SampleAPI.get_resource` will perform a request that always sends these headers:
@@ -232,44 +232,21 @@ The returned new parsed response will finally returned from `get_resource`.
 
 In the above example, the return value will be `"Response is The body content"`
 
-## Compile time and runtime safty
-### Compile time safty
-When definiing functions at compile time, `exrequester` will not compile if you fail to define the correct method.
 
-For example this:
-```elixir
-@get "/path/to/resource/{resource_id}"
-defreq get_resource()
-```
-When it gets compiled, it will return the following descriptive error.
-```elixir
-== Compilation error on file lib/http_bin_sample.ex ==
-** (ArgumentError) Function definition and url path are not matching:
-URL: /path/to/resource/{resource_id}
-Function: defreq get_resource()
-Errors:
-- Parameters [resource_id] are missing from function definition
-
-Correct definition: defreq get_resource(resource_id: resource_id)
-```
-
-The error will have the correct function definition:
-```elixir
-defreq get_resource(resource_id: resource_id)
-```
 ### Handle response
 Hitting any request will return a `EXRequester.Response` strucutre.
 This structure contains `headers`, `status_code` and `body`
 
 The body will not be parsed and will be returned as is.
 
-### Runtime safty
+
+## Runtime safty
 When calling the wrong method at runtime, `exrequester` will fail with a descriptive message.
 
 For example:
 ```elixir
 @get "/path/to/resource/{resource_id}"
-defreq get_resource(resource_id: resource_id)
+defreq get_resource
 ```
 If you wrongly call the method as:
 ```elixir
@@ -280,9 +257,9 @@ AMod.client("http://localhost:9090/")
 The following error will be raised:
 ```elixir
 ** (RuntimeError) You are trying to call the wrong function
-get_resource(key: key)
+get_resource(client, key: key)
 please instead call:
-get_resource(resource_id: resource_id)
+get_resource(client, resource_id: resource_id)
 ```
 The error will inform you about the correct method invocation
 

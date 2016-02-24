@@ -7,7 +7,7 @@ defmodule EXRequester.BodyTests do
     defmodule TestAPI5 do
       use EXRequester
       @get "user/{id}"
-      defreq get_status(id: id, body: body)
+      defreq get_status
     end
 
     TestAPI5.client("https://httpbin.org")
@@ -24,7 +24,7 @@ defmodule EXRequester.BodyTests do
     defmodule TestAPI6 do
       use EXRequester
       @get "user/{id}"
-      defreq get_status(id: id, body: body)
+      defreq get_status
     end
 
     TestAPI6.client("https://httpbin.org")

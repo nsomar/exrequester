@@ -8,10 +8,10 @@ defmodule EXRequester.MethodTests do
       use EXRequester
 
       @get "user/{id}"
-      defreq get_status(id: id)
+      defreq get_status
 
       @get "user/{id}/{repo}"
-      defreq get_status_with_repo(id: id, repo: repo)
+      defreq get_status_with_repo
     end
 
     TestAPI5.client("https://httpbin.org")
@@ -30,10 +30,10 @@ defmodule EXRequester.MethodTests do
       use EXRequester
 
       @get "user/{id}"
-      defreq get_status(id: id)
+      defreq get_status
 
       @get "user/{id}?repo={repo}"
-      defreq get_status_with_repo(id: id, repo: repo)
+      defreq get_status_with_repo
     end
 
     TestAPI6.client("https://httpbin.org")
@@ -50,10 +50,10 @@ defmodule EXRequester.MethodTests do
       use EXRequester
 
       @put "user/{id}"
-      defreq get_status(id: id)
+      defreq get_status
 
       @post "user/{id}?repo={repo}"
-      defreq get_status_with_repo(id: id, repo: repo)
+      defreq get_status_with_repo
     end
 
     TestAPIA6.client("https://httpbin.org")
