@@ -33,7 +33,7 @@ defmodule EXRequester do
           Key1: :key1
         ]
         @get "/path/to/resource/{resource_id}"
-        defreq get_resource(resource_id: resource_id, auth: auth, key1: key1)
+        defreq get_resource
       end
 
   Then to call it:
@@ -45,15 +45,31 @@ defmodule EXRequester do
   `http://base_url.com/path/to/resource/123`
   The `Authorization` and `Key1` headers will also be set.
 
-  If you want to decode the response, pass a decoder as a parameter when calling `get_resource`
-  For example:
+  If you want to decode the response, you can do it in two places:
+
+  At the function definition, For example:
+
+      defmodule SampleAPI do
+        ....
+        defreq get_resource(fn response ->
+          "Value is " <> response.body
+        end)
+      end
+
+  When calling `get_resource` the HTTP response of type `EXRequester.Response` will be sent to the passed anonymous function.
+  Using this way, you can create a response decoder in place.
+
+  Alternatively, you can pass a response decoder when calling the method pass a decoder as a parameter when calling `get_resource` For example:
 
         SampleAPI.client("http://base_url.com")
         |> SampleAPI.get_resource(resource_id: 123, auth1: "1", key1: "2", decoder: fn response ->
           "Value is " <> response.body
         end)
 
+
   The anonymous function passed to decoder will receive an `EXRequester.Response`. This function can parse the response and return a parsed response. The parsed response will be finally returned.
+
+  Note: The decoder passed when calling the method overwrites the decoder declated when defining the method in the module.
 
   The example above returns `"Value is Content of body"`
   """
@@ -61,13 +77,18 @@ defmodule EXRequester do
     post_defreq(head)
   end
 
-  def post_defreq({function_name, _, _}) do
-    define_functions(function_name)
+  def post_defreq({function_name, _, [decoder]}) do
+    define_functions(function_name, decoder)
   end
 
-  defp define_functions(function_name) do
+  def post_defreq({function_name, _, _}) do
+    define_functions(function_name, nil)
+  end
+
+  defp define_functions(function_name, decoder) do
     quote bind_quoted: [
-      function_name: function_name] do
+      function_name: function_name,
+      decoder: Macro.escape(decoder)] do
 
       [{request_method, request_path}] = get_request_path_and_method
       headers = get_request_headers
@@ -77,6 +98,7 @@ defmodule EXRequester do
         EXRequester.Request.new(method: unquote(request_method), path: unquote(request_path))
         |> EXRequester.Request.add_headers_keys(unquote(headers))
         |> EXRequester.Request.add_query_keys(unquote(query))
+        |> EXRequester.Request.add_decoder(unquote(decoder))
       end
 
       proposed_method =
@@ -137,6 +159,7 @@ defmodule EXRequester do
         request = unquote(request)
         |> EXRequester.Request.add_body(params[:body])
         |> EXRequester.Request.add_base_url(client.url)
+        |> EXRequester.Request.add_decoder(params[:decoder])
 
         perform_request_and_parse(unquote(function_name), params, request)
       end
@@ -158,17 +181,18 @@ defmodule EXRequester do
 
   def perform_request_and_parse(function_name, params, request) do
     check_called_correctly(function_name, params, request)
+
     request_performer.do_request(request, params)
-    |> parse_response(params[:decoder])
+    |> parse_response(request)
   end
 
   defp request_performer do
     Application.get_env(:exrequester, :request_performer, EXRequester.Performer.HTTPotion)
   end
 
-  defp parse_response(response, nil), do: response
+  defp parse_response(response, %{decoder: nil}), do: response
 
-  defp parse_response(response, decoder) do
+  defp parse_response(response, %{decoder: decoder}) do
     decoder.(response)
   end
 

@@ -36,7 +36,6 @@ defmodule EXRequest.ParamsCheckerTests do
     assert res == {:error, [missing: [], extra: ["name"]]}
   end
 
-
   test "it checks that the params passed match the url and header" do
     url = "users/{name}"
     res = EXRequest.ParamsChecker.check_params(url, [:auth], [:name, :auth])
