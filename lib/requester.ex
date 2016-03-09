@@ -74,31 +74,43 @@ defmodule EXRequester do
   The example above returns `"Value is Content of body"`
   """
   defmacro defreq(head) do
-    post_defreq(head)
+    post_defreq(head, nil)
   end
 
-  def post_defreq({function_name, _, [decoder]}) do
-    define_functions(function_name, decoder)
+  defmacro defreq(head, do: body) do
+    post_defreq(head, body)
+  end
+
+  def post_defreq({function_name, _, [decoder]}, body) do
+    define_functions(function_name, decoder, body)
+  end
+
+  def post_defreq({function_name, _, [decoder]}, _) do
+    define_functions(function_name, decoder, nil)
   end
 
   def post_defreq({function_name, _, _}) do
-    define_functions(function_name, nil)
+    define_functions(function_name, nil, nil)
   end
 
-  defp define_functions(function_name, decoder) do
+  defp define_functions(function_name, decoder, body) do
     quote bind_quoted: [
       function_name: function_name,
-      decoder: Macro.escape(decoder)] do
+      body: Macro.escape(body),
+      decoder: Macro.escape(decoder)
+      ] do
 
       [{request_method, request_path}] = get_request_path_and_method
       headers = get_request_headers
       query = get_request_query
 
+      body_e = Macro.escape(body)
       request = quote do
         EXRequester.Request.new(method: unquote(request_method), path: unquote(request_path))
         |> EXRequester.Request.add_headers_keys(unquote(headers))
         |> EXRequester.Request.add_query_keys(unquote(query))
         |> EXRequester.Request.add_decoder(unquote(decoder))
+        |> EXRequester.Request.add_body_block(unquote(body_e)) |> IO.inspect
       end
 
       proposed_method =
@@ -110,7 +122,6 @@ defmodule EXRequester do
       define_function(has_params, function_name, proposed_method, request)
       clear_attributes
     end
-
   end
 
   @doc """
@@ -141,7 +152,6 @@ defmodule EXRequester do
   * `has_params` - the function has any parameter
   """
   def define_function(name: function_name, request: request, has_params: has_params) do
-
     quote bind_quoted: [has_params: has_params], unquote: true do
       if has_params do
         unquote(define_function_with_params(name: function_name, request: request, has_params: true))
@@ -155,6 +165,7 @@ defmodule EXRequester do
     quote bind_quoted:
     [function_name: function_name,
     request: request] do
+
       def unquote(function_name)(client, params) do
         request = unquote(request)
         |> EXRequester.Request.add_body(params[:body])
@@ -183,17 +194,11 @@ defmodule EXRequester do
     check_called_correctly(function_name, params, request)
 
     request_performer.do_request(request, params)
-    |> parse_response(request)
+    |> EXRequester.ResponseParser.parse_response(request)
   end
 
   defp request_performer do
     Application.get_env(:exrequester, :request_performer, EXRequester.Performer.HTTPotion)
-  end
-
-  defp parse_response(response, %{decoder: nil}), do: response
-
-  defp parse_response(response, %{decoder: decoder}) do
-    decoder.(response)
   end
 
   @doc """

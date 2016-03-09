@@ -4,7 +4,7 @@ defmodule EXRequester.Request do
   Structure that holds a request
   """
 
-  defstruct [:method, :base_url, :path, :headers_template, :body, :query_keys, :decoder]
+  defstruct [:method, :base_url, :path, :headers_template, :body, :query_keys, :decoder, :body_block]
 
   @doc """
   Return a new request
@@ -45,21 +45,31 @@ defmodule EXRequester.Request do
   * `body` - body to add
   """
   def add_body(request, body) do
-     Map.put(request, :body, body)
+    Map.put(request, :body, body)
   end
 
   @doc """
+  * `request` - request to update
   Adds a decoder block that will be called with the response
+
+  * `decoder` - decoder block to call
+  """
+  def add_decoder(request, nil), do: request
+
+  def add_decoder(request, decoder) do
+    Map.put(request, :decoder, decoder)
+  end
+
+  @doc """
+  Adds a body block to the request
 
   Parameters:
 
   * `request` - request to update
-  * `decoder` - decoder block to call
+  * `body_block` - body block to be called after request
   """
-  def add_decoder(request, nil), do: request
-  
-  def add_decoder(request, decoder) do
-     Map.put(request, :decoder, decoder)
+  def add_body_block(request, body_block) do
+    Map.put(request, :body_block, body_block)
   end
 
   @doc """
