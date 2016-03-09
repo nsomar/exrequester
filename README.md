@@ -217,9 +217,10 @@ Accept-Language: en-US
 Notice the use of quotes in the `"Accept-Language"`. This is needed since `Accept-Language` is not a valid atom name. In order to solve that, add quotation around atoms.
 
 ### Decoding HTTP Response
-`EXRequester` allows you to pass an anonymous function to be used as response parser. This anonymouse function can be definied in two places.
+`EXRequester` allows you to define a parse function/block to be used as a parser for the resceived response.
+The parser can be set in three ways.
 
-First, You can pass the anonymouse function at the function definition, For example:
+First: You can pass the anonymouse function at the function definition, For example:
 
 ```elixir
 defmodule SampleAPI do
@@ -232,6 +233,19 @@ end
 
 When calling `get_resource` the HTTP response of type `EXRequester.Response` will be sent to the passed anonymous function.
 Using this way, you can create a response decoder in place.
+
+Second: By defining a body to the get_resource function, inside this body, you can use `response` object which will be injected by the macro
+
+```elixir
+defmodule SampleAPI do
+  ....
+  defreq get_resource do
+    "Value is " <> response.body
+  end
+end
+```
+
+`response` will be set by the macro to the value of the `EXRequester.Response` received.
 
 Alternatively, you can pass a response decoder when calling the method pass a decoder as a parameter when calling `get_resource` For example:
 

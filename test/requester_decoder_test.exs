@@ -49,13 +49,12 @@ defmodule EXRequester.DEcoderTests do
     assert res == "before-123-after"
   end
 
-  test "it return passes the response to the body" do
+  test "it return passes the response to the body when using body block" do
     defmodule TestAPIA9 do
       use EXRequester
 
       @put "user/{id}"
       defreq get_status do
-        IO.inspect "HEre"
         "before-" <> response.body <> "-after"
       end
 
@@ -67,7 +66,7 @@ defmodule EXRequester.DEcoderTests do
     assert res == "before-123-after"
   end
 
-  test "it overwrites the module level decoder" do
+  test "the decoder passed overwrites the module level decoder" do
     defmodule TestAPIA10 do
       use EXRequester
 
@@ -80,6 +79,25 @@ defmodule EXRequester.DEcoderTests do
 
     res = TestAPIA10.client("https://httpbin.org")
     |> TestAPIA10.get_status(id: 1, decoder: fn response ->
+      "before2222-" <> response.body <> "-after"
+    end)
+
+    assert res == "before2222-123-after"
+  end
+
+  test "the decoder passed overwrites the body block used" do
+    defmodule TestAPIA11 do
+      use EXRequester
+
+      @put "user/{id}"
+      defreq get_status do
+        "before-" <> response.body <> "-after"
+      end
+
+    end
+
+    res = TestAPIA11.client("https://httpbin.org")
+    |> TestAPIA11.get_status(id: 1, decoder: fn response ->
       "before2222-" <> response.body <> "-after"
     end)
 

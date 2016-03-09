@@ -4,17 +4,17 @@ defmodule EXRequester.ResponseParser do
   """
 
   @doc ~S"""
-   Parse an EXRequester.Response using parameters provided in the EXRequester.Request passed  
+   Parse an EXRequester.Response using parameters provided in the EXRequester.Request passed
   """
+  def parse_response(http_response, %{decoder: decoder})
+  when not is_nil(decoder) do
+    decoder.(http_response)
+  end
+  
   def parse_response(http_response, %{body_block: body_block})
   when not is_nil(body_block) do
     {response, _} = Code.eval_quoted(body_block, [response: http_response])
     response
-  end
-
-  def parse_response(http_response, %{decoder: decoder})
-  when not is_nil(decoder) do
-    decoder.(http_response)
   end
 
   def parse_response(http_response, _) do

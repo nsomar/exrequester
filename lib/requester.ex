@@ -45,9 +45,9 @@ defmodule EXRequester do
   `http://base_url.com/path/to/resource/123`
   The `Authorization` and `Key1` headers will also be set.
 
-  If you want to decode the response, you can do it in two places:
+  If you want to decode the response, you can do it in three ways:
 
-  At the function definition, For example:
+  First: At the function definition, by passing an anonymous function, For example;
 
       defmodule SampleAPI do
         ....
@@ -58,6 +58,17 @@ defmodule EXRequester do
 
   When calling `get_resource` the HTTP response of type `EXRequester.Response` will be sent to the passed anonymous function.
   Using this way, you can create a response decoder in place.
+
+  Second: By defining a body to the get_resource function, inside this body, you can use `response` object which will be injected by the macro
+
+      defmodule SampleAPI do
+        ....
+        defreq get_resource do
+          "Value is " <> response.body
+        end
+      end
+
+  `response` will be set by the macro to the value of the `EXRequester.Response` received.
 
   Alternatively, you can pass a response decoder when calling the method pass a decoder as a parameter when calling `get_resource` For example:
 
@@ -81,16 +92,14 @@ defmodule EXRequester do
     post_defreq(head, body)
   end
 
+  def post_defreq(head, body \\ nil)
+
   def post_defreq({function_name, _, [decoder]}, body) do
     define_functions(function_name, decoder, body)
   end
 
-  def post_defreq({function_name, _, [decoder]}, _) do
-    define_functions(function_name, decoder, nil)
-  end
-
-  def post_defreq({function_name, _, _}) do
-    define_functions(function_name, nil, nil)
+  def post_defreq({function_name, _, _}, body) do
+    define_functions(function_name, nil, body)
   end
 
   defp define_functions(function_name, decoder, body) do
@@ -110,7 +119,7 @@ defmodule EXRequester do
         |> EXRequester.Request.add_headers_keys(unquote(headers))
         |> EXRequester.Request.add_query_keys(unquote(query))
         |> EXRequester.Request.add_decoder(unquote(decoder))
-        |> EXRequester.Request.add_body_block(unquote(body_e)) |> IO.inspect
+        |> EXRequester.Request.add_body_block(unquote(body_e))
       end
 
       proposed_method =
