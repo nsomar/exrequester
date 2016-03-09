@@ -7,7 +7,7 @@ defmodule EXRequester.Mixfile do
     source_url: "https://github.com/oarrabi/exrequester",
     docs: [ extras: ["README.md"] ],
     description: description,
-    version: "0.5.0",
+    version: "0.5.1",
     elixir: "~> 1.0",
     build_embedded: Mix.env == :prod,
     start_permanent: Mix.env == :prod,

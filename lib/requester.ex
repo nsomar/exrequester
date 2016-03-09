@@ -122,13 +122,10 @@ defmodule EXRequester do
         |> EXRequester.Request.add_body_block(unquote(body_e))
       end
 
-      proposed_method =
-      EXRequest.ParamsChecker.propsed_method_invocation(func_name: function_name, url: request_path)
-
       has_params = EXRequest.ParamsChecker.check_has_params(url: request_path,
       headers: headers, query: query)
 
-      define_function(has_params, function_name, proposed_method, request)
+      define_function(has_params, function_name, request)
       clear_attributes
     end
   end
@@ -143,11 +140,11 @@ defmodule EXRequester do
   * `proposed` - the proposesd function definition to use
   * `request` - `EXRequester.request` to use
   """
-  defmacro define_function(has_params, function, proposed, request) do
+  defmacro define_function(has_params, function, request) do
     quote do
       unquote(define_function(name: function, request: request, has_params: has_params))
-      unquote(define_catch_error_function(name: function, proposed: proposed, has_params: has_params))
-      unquote(define_catch_error_for_empty(name: function, proposed: proposed))
+      unquote(define_catch_error_function(name: function, request: request, has_params: has_params))
+      unquote(define_catch_error_for_empty(name: function, request: request))
     end
   end
 
@@ -219,15 +216,16 @@ defmodule EXRequester do
   * `params` - the function parameters used
   * `request` - `EXRequester.request` to use
   """
-  def check_called_correctly(function_name, params, request) do
+  def check_called_correctly(function_name, params, request, has_client \\ true) do
     params = params || []
     headers_template = request.headers_template || []
 
     case EXRequest.ParamsChecker.check_invocation_params(
-    function_name,
-    Keyword.keys(params) -- request.query_keys,
-    request.path,
-    Keyword.values(headers_template))
+      function_name,
+      Keyword.keys(params) -- request.query_keys,
+      request.path,
+      Keyword.values(headers_template),
+      has_client)
     do
       :ok -> :ok
       {:error, error} ->
@@ -241,16 +239,16 @@ defmodule EXRequester do
   Parameters:
 
   * `function_name` - the function name to define
-  * `proposed_function` - the proposed function to define
+  * `request` - the request defined
   """
-  def define_catch_error_for_empty(name: function_name, proposed: proposed_function) do
+  def define_catch_error_for_empty(name: function_name, request: request) do
     quote bind_quoted: [
       function_name: function_name,
-      proposed_function: proposed_function] do
+      request: request] do
 
       def unquote(function_name)() do
         called_function = "#{unquote(function_name)}"
-        raise RuntimeError, exception_to_raise(called_function, unquote(proposed_function))
+        check_called_correctly(unquote(function_name), [], unquote(request), false)
       end
 
     end
@@ -263,16 +261,16 @@ defmodule EXRequester do
 
 
   * `function_name` - the function name to define
-  * `proposed_function` - the proposed function to define
+  * `request` - the request defined
   * `has_params` - the function has any parameter
   """
-  def define_catch_error_function(name: function_name, proposed: proposed_function, has_params: has_params) do
+  def define_catch_error_function(name: function_name, request: request, has_params: has_params) do
     quote bind_quoted: [has_params: has_params], unquote: true do
 
         if has_params do
-          unquote(define_catch_error_function_with_params(name: function_name, proposed: proposed_function, has_params: true))
+          unquote(define_catch_error_function_with_params(name: function_name, request: request, has_params: true))
         else
-          unquote(define_catch_error_function_with_params(name: function_name, proposed: proposed_function, has_params: false))
+          unquote(define_catch_error_function_with_params(name: function_name, request: request, has_params: false))
         end
     end
   end
@@ -283,30 +281,28 @@ defmodule EXRequester do
   Parameters:
 
   * `function_name` - the function name to define
-  * `proposed_function` - the proposed function to define
+  * `request` - the request to defined
   * `has_params` - the function has any parameter
   """
-  defp define_catch_error_function_with_params(name: function_name, proposed: proposed_function, has_params: false) do
+  defp define_catch_error_function_with_params(name: function_name, request: request, has_params: false) do
     quote bind_quoted: [
       function_name: function_name,
-      proposed_function: proposed_function] do
+      request: request] do
 
       def unquote(function_name)(client, other) do
-        called_function = "#{unquote(function_name)}(client, other...)"
-        raise RuntimeError, exception_to_raise(called_function, unquote(proposed_function))
+        check_called_correctly(unquote(function_name), other, unquote(request))
       end
 
     end
   end
 
-  defp define_catch_error_function_with_params(name: function_name, proposed: proposed_function, has_params: true) do
+  defp define_catch_error_function_with_params(name: function_name, request: request, has_params: true) do
     quote bind_quoted: [
       function_name: function_name,
-      proposed_function: proposed_function] do
+      request: request] do
 
       def unquote(function_name)(client) do
-        called_function = "#{unquote(function_name)}(client)"
-        raise RuntimeError, exception_to_raise(called_function, unquote(proposed_function))
+        check_called_correctly(unquote(function_name), [], unquote(request))
       end
 
     end
@@ -342,20 +338,6 @@ defmodule EXRequester do
     quote do
       Module.get_attribute(__MODULE__, :query) || []
     end
-  end
-
-  @doc """
-  Exception to raise if the function was called incorrectly
-
-  Parameters:
-
-  * `called_function` - the function called
-  * `correct_function` - the correct function to call
-  """
-  def exception_to_raise(called_function, correct_function) do
-    "You are trying to call the wrong function" <>
-    "\n#{called_function}" <>
-    "\nplease instead call:\n#{correct_function}"
   end
 
   @doc """

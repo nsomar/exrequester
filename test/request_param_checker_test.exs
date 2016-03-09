@@ -89,19 +89,23 @@ defmodule EXRequest.ParamsCheckerTests do
   test "it reports error when invocation has wrong parameters" do
     url = "users/{name}/repo/{id}"
     res = EXRequest.ParamsChecker.check_invocation_params(:get_status, [:name, :id, :also], url, [])
-    assert res ==  {:error, "You are trying to call the wrong function\nget_status(client, name: name, id: id, also: also)\nplease instead call:\nget_status(client, name: name, id: id)"}
+    assert res ==  {:error,
+            "\n\nYou are trying to call the wrong function:\n  get_status(client, name: name, id: id, also: also)\nPlease instead call:\n  get_status(client, name: name, id: id)\n"}
 
     url = "users/{name}/repo/{id}/{also}"
     res = EXRequest.ParamsChecker.check_invocation_params(:get_status, [:name, :id], url, [])
-    assert res ==  {:error, "You are trying to call the wrong function\nget_status(client, name: name, id: id)\nplease instead call:\nget_status(client, name: name, id: id, also: also)"}
+    assert res ==  {:error,
+            "\n\nYou are trying to call the wrong function:\n  get_status(client, name: name, id: id)\nPlease instead call:\n  get_status(client, name: name, id: id, also: also)\n"}
 
     url = "users"
     res = EXRequest.ParamsChecker.check_invocation_params(:get_status, [:name, :id], url, [])
-    assert res == {:error, "You are trying to call the wrong function\nget_status(client, name: name, id: id)\nplease instead call:\nget_status(client)"}
+    assert res == {:error,
+            "\n\nYou are trying to call the wrong function:\n  get_status(client, name: name, id: id)\nPlease instead call:\n  get_status(client)\n"}
 
     url = "users/{name}/repo/{id}/{also}"
     res = EXRequest.ParamsChecker.check_invocation_params(:get_status, [], url, [])
-    assert res == {:error, "You are trying to call the wrong function\nget_status(client)\nplease instead call:\nget_status(client, name: name, id: id, also: also)"}
+    assert res == {:error,
+            "\n\nYou are trying to call the wrong function:\n  get_status(client)\nPlease instead call:\n  get_status(client, name: name, id: id, also: also)\n"}
   end
 
   test "it ignores textual headers in the invocation" do
@@ -119,19 +123,23 @@ defmodule EXRequest.ParamsCheckerTests do
   test "it reports error when invocation has wrong parameters with headers " do
     url = "users/{name}/repo"
     res = EXRequest.ParamsChecker.check_invocation_params(:get_status, [:name, :id, :also], url, [:id])
-    assert res ==  {:error, "You are trying to call the wrong function\nget_status(client, name: name, id: id, also: also)\nplease instead call:\nget_status(client, name: name, id: id)"}
+    assert res ==  {:error,
+            "\n\nYou are trying to call the wrong function:\n  get_status(client, name: name, id: id, also: also)\nPlease instead call:\n  get_status(client, name: name, id: id)\n"}
 
     url = "users/{name}/repo/{id}"
     res = EXRequest.ParamsChecker.check_invocation_params(:get_status, [:name, :id], url, [:also])
-    assert res ==  {:error, "You are trying to call the wrong function\nget_status(client, name: name, id: id)\nplease instead call:\nget_status(client, name: name, id: id, also: also)"}
+    assert res ==  {:error,
+            "\n\nYou are trying to call the wrong function:\n  get_status(client, name: name, id: id)\nPlease instead call:\n  get_status(client, name: name, id: id, also: also)\n"}
 
     url = "users"
     res = EXRequest.ParamsChecker.check_invocation_params(:get_status, [:name, :id], url, [])
-    assert res == {:error, "You are trying to call the wrong function\nget_status(client, name: name, id: id)\nplease instead call:\nget_status(client)"}
+    assert res == {:error,
+            "\n\nYou are trying to call the wrong function:\n  get_status(client, name: name, id: id)\nPlease instead call:\n  get_status(client)\n"}
 
     url = "users/{name}/repo/{id}"
     res = EXRequest.ParamsChecker.check_invocation_params(:get_status, [], url, [:also])
-    assert res == {:error, "You are trying to call the wrong function\nget_status(client)\nplease instead call:\nget_status(client, name: name, id: id, also: also)"}
+    assert res ==  {:error,
+            "\n\nYou are trying to call the wrong function:\n  get_status(client)\nPlease instead call:\n  get_status(client, name: name, id: id, also: also)\n"}
   end
 
   test "it checks if function has params" do

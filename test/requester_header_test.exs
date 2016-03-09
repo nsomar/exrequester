@@ -17,7 +17,7 @@ defmodule EXRequester.HeaderTests do
     end
 
     assert_raise(RuntimeError,
-    "You are trying to call the wrong function\nget_status(client, id: id, authorization: authorization)\nplease instead call:\nget_status(client, id: id, authorization: authorization, key1: key1)",
+    "\n\nYou are trying to call the wrong function:\n  get_status(client, id: id, authorization: authorization)\nPlease instead call:\n  get_status(client, id: id, authorization: authorization, key1: key1)\n",
     fn ->
       TestAPI6.client("https://httpbin.org")
       |> TestAPI6.get_status(id: 1, authorization: 20)

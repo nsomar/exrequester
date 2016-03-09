@@ -22,14 +22,14 @@ defmodule EXRequester.Tests do
     end
 
     assert_raise(RuntimeError,
-    "You are trying to call the wrong function\nget_status(client)\nplease instead call:\nget_status(client, id: id)",
+    "\n\nYou are trying to call the wrong function:\n  get_status(client)\nPlease instead call:\n  get_status(client, id: id)\n",
     fn ->
       TestAPI4.client("https://httpbin.org/")
       |> TestAPI4.get_status
     end)
 
     assert_raise(RuntimeError,
-    "You are trying to call the wrong function\nget_status(client, id: id, name: name)\nplease instead call:\nget_status(client, id: id)",
+    "\n\nYou are trying to call the wrong function:\n  get_status(client, id: id, name: name)\nPlease instead call:\n  get_status(client, id: id)\n",
     fn ->
       TestAPI4.client("https://httpbin.org/")
       |> TestAPI4.get_status(id: 1, name: 2)

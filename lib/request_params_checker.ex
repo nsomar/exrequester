@@ -29,20 +29,29 @@ defmodule EXRequest.ParamsChecker do
   * `url` - The url used to invoke the function
   * `header_keys` - The headers used to invoke the function
   """
-  def check_invocation_params(function_name, function_params, url, header_keys) do
+  def check_invocation_params(function_name, function_params, url, header_keys, has_client \\ true) do
     function_params = function_params -- [:body, :decoder]
+    prefix = prefix_for_client(has_client)
+
     case check_params(url, header_keys, function_params) do
       {:error, _} ->
-        invoked_func = propsed_method_invocation(func_name: function_name, params: function_params)
+        invoked_func = propsed_method_invocation(prefix, func_name: function_name, params: function_params)
         correct_func = propsed_method_invocation(func_name: function_name, url: url, header_keys: header_keys)
-        {:error, "You are trying to call the wrong function" <>
-        "\n#{invoked_func}" <>
-        "\nplease instead call:\n#{correct_func}"
-        }
+        {:error,
+        "\n\n" <>
+        """
+        You are trying to call the wrong function:
+          #{invoked_func}
+        Please instead call:
+          #{correct_func}
+        """}
 
       :ok -> :ok
     end
   end
+
+  defp prefix_for_client(false), do: nil
+  defp prefix_for_client(has_client), do: "client"
 
   @doc """
   Checks that the url, header_keys and function parameters match
@@ -76,8 +85,10 @@ defmodule EXRequest.ParamsChecker do
   * `func_name` - The function name used
   * `url` - The url used to invoke the function
   """
-  def propsed_method_invocation(func_name: func_name, url: url) do
-    propsed_method_invocation(func_name: func_name, params: url_params(url))
+  def propsed_method_invocation(prefix \\ "client", other)
+
+  def propsed_method_invocation(prefix, func_name: func_name, url: url) do
+    propsed_method_invocation(prefix, func_name: func_name, params: url_params(url))
   end
 
   @doc """
@@ -89,9 +100,9 @@ defmodule EXRequest.ParamsChecker do
   * `url` - The url used to invoke the function
   * `header_keys` - The header keys used to invoke the function
   """
-  def propsed_method_invocation(func_name: func_name, url: url, header_keys: header_keys) do
+  def propsed_method_invocation(prefix, func_name: func_name, url: url, header_keys: header_keys) do
     header_keys = header_keys |> filter_header_keys
-    propsed_method_invocation(func_name: func_name, params: url_params(url) ++ header_keys)
+    propsed_method_invocation(prefix, func_name: func_name, params: url_params(url) ++ header_keys)
   end
 
   @doc """
@@ -102,9 +113,12 @@ defmodule EXRequest.ParamsChecker do
   * `func_name` - The function name used
   * `params` - The parameters used in the function
   """
-  def propsed_method_invocation(func_name: func_name, params: params) do
+  def propsed_method_invocation(prefix, func_name: func_name, params: params) do
+    all_params = [prefix , proposed_params(for_params: params)]
+    |> Enum.filter(fn item -> item != "" end)
+    |> Enum.join(", ")
 
-    "#{func_name}(#{proposed_params(for_params: params)})"
+    "#{func_name}(#{all_params})"
   end
 
   @doc """
@@ -146,11 +160,11 @@ defmodule EXRequest.ParamsChecker do
   end
 
   defp proposed_params(for_params: []) do
-    "client"
+    ""
   end
 
   defp proposed_params(for_params: params) do
-    Enum.reduce(params, "client, ", fn param, acc-> acc <> "#{param}: #{param}, " end)
+    Enum.reduce(params, "", fn param, acc-> acc <> "#{param}: #{param}, " end)
     |> String.slice(0..-3)
   end
 
