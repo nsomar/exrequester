@@ -107,26 +107,25 @@ defmodule EXRequester do
       function_name: function_name,
       body: Macro.escape(body),
       decoder: Macro.escape(decoder)
-      ] do
+      ], unquote: true do
 
-      [{request_method, request_path}] = get_request_path_and_method
-      headers = get_request_headers
-      query = get_request_query
+      {[{request_method, request_path}], _} = Module.eval_quoted(__MODULE__, get_request_path_and_method)
+      headers = unquote(get_request_headers)
+      query = unquote(get_request_query)
 
-      body_e = Macro.escape(body)
-      request = quote do
-        EXRequester.Request.new(method: unquote(request_method), path: unquote(request_path))
-        |> EXRequester.Request.add_headers_keys(unquote(headers))
-        |> EXRequester.Request.add_query_keys(unquote(query))
-        |> EXRequester.Request.add_decoder(unquote(decoder))
-        |> EXRequester.Request.add_body_block(unquote(body_e))
-      end
+      request =
+        EXRequester.Request.new(method: request_method, path: request_path)
+        |> EXRequester.Request.add_headers_keys(headers)
+        |> EXRequester.Request.add_query_keys(query)
+        |> EXRequester.Request.add_decoder(decoder)
+        |> EXRequester.Request.add_body_block(body)
 
       has_params = EXRequest.ParamsChecker.check_has_params(url: request_path,
       headers: headers, query: query)
 
-      define_function(has_params, function_name, request)
-      clear_attributes
+      functions = define_function(has_params, function_name, request)
+      Module.eval_quoted(__MODULE__, functions)
+      unquote(clear_attributes)
     end
   end
 
@@ -140,38 +139,21 @@ defmodule EXRequester do
   * `proposed` - the proposesd function definition to use
   * `request` - `EXRequester.request` to use
   """
-  defmacro define_function(has_params, function, request) do
-    quote do
-      unquote(define_function(name: function, request: request, has_params: has_params))
-      unquote(define_catch_error_function(name: function, request: request, has_params: has_params))
-      unquote(define_catch_error_for_empty(name: function, request: request))
-    end
-  end
+  def define_function(has_params, function, request) do
+    request = request |> Macro.escape |> Macro.escape
 
-  @doc """
-  Define the function to call
-
-  Parameters:
-
-  * `function_name` - the function name to define
-  * `request` - `EXRequester.request` to use
-  * `has_params` - the function has any parameter
-  """
-  def define_function(name: function_name, request: request, has_params: has_params) do
-    quote bind_quoted: [has_params: has_params], unquote: true do
-      if has_params do
-        unquote(define_function_with_params(name: function_name, request: request, has_params: true))
-      else
-        unquote(define_function_with_params(name: function_name, request: request, has_params: false))
-      end
-    end
+    [
+      define_function_with_params(name: function, request: request, has_params: has_params),
+      define_catch_error_function_with_params(name: function, request: request, has_params: has_params),
+      define_catch_error_for_empty(name: function, request: request)
+    ]
   end
 
   defp define_function_with_params(name: function_name, request: request, has_params: true) do
     quote bind_quoted:
     [function_name: function_name,
     request: request] do
-
+      import EXRequester
       def unquote(function_name)(client, params) do
         request = unquote(request)
         |> EXRequester.Request.add_body(params[:body])
@@ -259,50 +241,24 @@ defmodule EXRequester do
 
   Parameters:
 
-
-  * `function_name` - the function name to define
-  * `request` - the request defined
-  * `has_params` - the function has any parameter
-  """
-  def define_catch_error_function(name: function_name, request: request, has_params: has_params) do
-    quote bind_quoted: [has_params: has_params], unquote: true do
-
-        if has_params do
-          unquote(define_catch_error_function_with_params(name: function_name, request: request, has_params: true))
-        else
-          unquote(define_catch_error_function_with_params(name: function_name, request: request, has_params: false))
-        end
-    end
-  end
-
-  @doc """
-  Define a catch error function
-
-  Parameters:
-
   * `function_name` - the function name to define
   * `request` - the request to defined
   * `has_params` - the function has any parameter
   """
-  defp define_catch_error_function_with_params(name: function_name, request: request, has_params: false) do
+  defp define_catch_error_function_with_params(name: function_name, request: request, has_params: has_params) do
     quote bind_quoted: [
       function_name: function_name,
-      request: request] do
+      request: request,
+      has_params: has_params] do
 
-      def unquote(function_name)(client, other) do
-        check_called_correctly(unquote(function_name), other, unquote(request))
-      end
-
-    end
-  end
-
-  defp define_catch_error_function_with_params(name: function_name, request: request, has_params: true) do
-    quote bind_quoted: [
-      function_name: function_name,
-      request: request] do
-
-      def unquote(function_name)(client) do
-        check_called_correctly(unquote(function_name), [], unquote(request))
+      if has_params do
+        def unquote(function_name)(client) do
+          check_called_correctly(unquote(function_name), [], unquote(request))
+        end
+      else
+        def unquote(function_name)(client, other) do
+          check_called_correctly(unquote(function_name), other, unquote(request))
+        end
       end
 
     end
@@ -311,21 +267,21 @@ defmodule EXRequester do
   @doc """
   Read the module attribute that define the request HTTP method and path defined
   """
-  defmacro get_request_path_and_method do
+  def get_request_path_and_method do
     quote do
       [:get, :post, :put, :delete]
       |> Enum.map(fn method ->
         {method, Module.get_attribute(__MODULE__, method)}
       end)
       |> Enum.filter(fn {_, item} -> item != nil end)
-      |> check_has_http_method
+      |> EXRequester.check_has_http_method
     end
   end
 
   @doc """
   Read the module attribute that defines the headers
   """
-  defmacro get_request_headers do
+  def get_request_headers do
     quote do
       Module.get_attribute(__MODULE__, :headers) || []
     end
@@ -334,7 +290,7 @@ defmodule EXRequester do
   @doc """
   Read the module attribute that the query keys
   """
-  defmacro get_request_query do
+  def get_request_query do
     quote do
       Module.get_attribute(__MODULE__, :query) || []
     end
@@ -354,21 +310,21 @@ defmodule EXRequester do
   def check_has_http_method(arr), do: arr
 
   @doc """
-  Return all the possible attributes to define in the method
-  """
-  def possible_attributes do
-    [:get, :post, :put, :delete, :headers, :body]
-  end
-
-  @doc """
   Clear the module attributes after defining the functions
   """
-  defmacro clear_attributes do
+  def clear_attributes do
     quote do
       Enum.each(possible_attributes, fn attr ->
         Module.delete_attribute(__MODULE__, attr)
       end)
     end
+  end
+
+  @doc """
+  Return all the possible attributes to define in the method
+  """
+  def possible_attributes do
+    [:get, :post, :put, :delete, :headers, :body]
   end
 
 end
