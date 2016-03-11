@@ -79,4 +79,27 @@ defmodule EXRequester.HeaderTests do
     assert_received  {:request, [get: "https://httpbin.org/user/1", headers: [Authorization: 20, Key1: "The Value Is 123"]]}
   end
 
+  test """
+  it sends headers even if the function has no params
+  https://github.com/oarrabi/exrequester/issues/2
+  """ do
+
+    defmodule Api do
+      use EXRequester
+      @headers [
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "x-user-token": "a892079d-8028-46ec-8208-225e1a0e3af5",
+        "x-user-email": "demo@example.com",
+      ]
+      @get "/posts"
+      defreq get_posts
+    end
+
+    Api.client("https://httpbin.org")
+    |> Api.get_posts()
+
+    assert_received  {:request, [get: "https://httpbin.org/posts", headers: ["Content-Type": "application/json", Accept: "application/json", "x-user-token": "a892079d-8028-46ec-8208-225e1a0e3af5", "x-user-email": "demo@example.com"]]}
+  end
+
 end

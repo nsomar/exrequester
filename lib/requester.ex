@@ -154,6 +154,7 @@ defmodule EXRequester do
     [function_name: function_name,
     request: request] do
       import EXRequester
+      
       def unquote(function_name)(client, params) do
         request = unquote(request)
         |> EXRequester.Request.add_body(params[:body])
@@ -169,6 +170,8 @@ defmodule EXRequester do
     quote bind_quoted:
     [function_name: function_name,
     request: request] do
+      import EXRequester
+
       def unquote(function_name)(client) do
         request = unquote(request)
         |> EXRequester.Request.add_base_url(client.url)

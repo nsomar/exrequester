@@ -129,7 +129,9 @@ defmodule EXRequester.Request do
   * `request` - the request
   * `header_params` - the header parametrs to update with the keys
   """
-  def prepared_headers(request, nil), do: []
+  def prepared_headers(request, nil) do
+    header_keys = Map.get(request, :headers_template, [])
+  end
 
   def prepared_headers(request, header_params) do
     header_params = header_params |> filter_body
