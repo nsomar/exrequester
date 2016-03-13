@@ -109,22 +109,24 @@ defmodule EXRequester do
       decoder: Macro.escape(decoder)
       ], unquote: true do
 
-      {[{request_method, request_path}], _} = Module.eval_quoted(__MODULE__, get_request_path_and_method)
+      alias EXRequester.Request
+
+      {[{request_method, request_path}], _} = Module.eval_quoted(__MODULE__, get_request_path_and_method, [], __ENV__)
       headers = unquote(get_request_headers)
       query = unquote(get_request_query)
 
       request =
-        EXRequester.Request.new(method: request_method, path: request_path)
-        |> EXRequester.Request.add_headers_keys(headers)
-        |> EXRequester.Request.add_query_keys(query)
-        |> EXRequester.Request.add_decoder(decoder)
-        |> EXRequester.Request.add_body_block(body)
+        Request.new(method: request_method, path: request_path)
+        |> Request.add_headers_keys(headers)
+        |> Request.add_query_keys(query)
+        |> Request.add_decoder(decoder)
+        |> Request.add_body_block(body)
 
       has_params = EXRequest.ParamsChecker.check_has_params(url: request_path,
       headers: headers, query: query)
 
       functions = define_function(has_params, function_name, request)
-      Module.eval_quoted(__MODULE__, functions)
+      Module.eval_quoted(__MODULE__, functions, [], __ENV__)
       unquote(clear_attributes)
     end
   end
@@ -153,8 +155,7 @@ defmodule EXRequester do
     quote bind_quoted:
     [function_name: function_name,
     request: request] do
-      import EXRequester
-      
+
       def unquote(function_name)(client, params) do
         request = unquote(request)
         |> EXRequester.Request.add_body(params[:body])
@@ -170,7 +171,6 @@ defmodule EXRequester do
     quote bind_quoted:
     [function_name: function_name,
     request: request] do
-      import EXRequester
 
       def unquote(function_name)(client) do
         request = unquote(request)
@@ -277,7 +277,7 @@ defmodule EXRequester do
         {method, Module.get_attribute(__MODULE__, method)}
       end)
       |> Enum.filter(fn {_, item} -> item != nil end)
-      |> EXRequester.check_has_http_method
+      |> check_has_http_method
     end
   end
 
